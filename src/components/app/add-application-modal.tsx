@@ -38,7 +38,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
-  jobDescriptionUrl: z.string().url('Please enter a valid URL.').or(z.literal('')),
+  jobDescriptionUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   company: z.string().min(1, 'Company name is required.'),
   role: z.string().min(1, 'Role is required.'),
   location: z.string().min(1, 'Location is required.'),
