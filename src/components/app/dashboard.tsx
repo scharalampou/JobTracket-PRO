@@ -18,8 +18,7 @@ export function Dashboard() {
       '3rd Interview',
       'Task Stage',
       'Final Round', 
-      'Offer Received', 
-      'Accepted'
+      'Offer Received'
     ];
     const inInterview = applications.filter(app => interviewStages.includes(app.status)).length;
     

@@ -8,7 +8,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/1',
     dateApplied: new Date('2024-07-15'),
     location: 'Remote',
-    status: 'Technical Interview',
+    status: '2nd Interview',
   },
   {
     id: '2',
@@ -35,7 +35,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/4',
     dateApplied: new Date('2024-06-25'),
     location: 'San Francisco, CA',
-    status: 'Offer',
+    status: 'Offer Received',
   },
   {
     id: '5',
@@ -53,7 +53,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/6',
     dateApplied: new Date('2024-07-18'),
     location: 'Remote',
-    status: 'Screening',
+    status: 'Screening with Recruiter',
   },
   {
     id: '7',
@@ -62,7 +62,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/7',
     dateApplied: new Date('2024-07-01'),
     location: 'Remote',
-    status: 'Recruiter Call',
+    status: 'Screening with Recruiter',
   },
   {
     id: '8',
@@ -71,7 +71,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/8',
     dateApplied: new Date('2024-06-15'),
     location: 'Tokyo, JP',
-    status: 'Ghosted',
+    status: 'Rejected CV',
   },
   {
     id: '9',
@@ -80,6 +80,6 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/9',
     dateApplied: new Date('2024-04-20'),
     location: 'Berlin, DE',
-    status: 'Accepted',
+    status: 'Offer Received',
   },
 ];

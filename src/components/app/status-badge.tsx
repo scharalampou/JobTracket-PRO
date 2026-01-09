@@ -16,7 +16,6 @@ const statusColors: Record<ApplicationStatus, string> = {
   'Task Stage': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30 hover:bg-yellow-500/30',
   'Final Round': 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30',
   'Offer Received': 'bg-green-500/20 text-green-300 border-green-500/30 hover:bg-green-500/30',
-  Accepted: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold hover:bg-emerald-500/30',
   'No Offer': 'bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30',
   'Rejected CV': 'bg-orange-500/20 text-orange-300 border-orange-500/30 hover:bg-orange-500/30',
 };

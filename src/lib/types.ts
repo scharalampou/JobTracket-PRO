@@ -7,7 +7,6 @@ export const APPLICATION_STATUSES = [
   'Task Stage',
   'Final Round',
   'Offer Received',
-  'Accepted',
   'No Offer',
   'Rejected CV',
 ] as const;
