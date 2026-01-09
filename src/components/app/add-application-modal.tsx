@@ -123,7 +123,7 @@ export function AddApplicationModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-brand hover:bg-brand/90 text-[#121212] font-bold">
+        <Button className="bg-brand hover:bg-brand/90 text-white font-bold">
           <Plus className="-ml-1 mr-2 h-5 w-5" />
           Add Application
         </Button>
