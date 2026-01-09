@@ -29,10 +29,9 @@ export function SuccessRateChart() {
     }
     
     const totalInterviews = applications.filter(app => interviewStages.includes(app.status)).length;
-    const applicationsWithoutInterview = totalApplications - totalInterviews;
-
+    
     return [
-      { name: 'Applied (No Interview)', value: applicationsWithoutInterview },
+      { name: 'Applications', value: totalApplications },
       { name: 'Interviews', value: totalInterviews },
     ];
   }, [applications]);
