@@ -111,7 +111,7 @@ export function ApplicationList() {
                 <SortableHeader sortKey="role">Role</SortableHeader>
               </TableHead>
               <TableHead className="w-[150px] text-base font-bold">
-                <SortableHeader sortKey="dateApplied">Date Applied</SortableHeader>
+                <SortableHeader sortKey="dateApplied">Date</SortableHeader>
               </TableHead>
               <TableHead className="w-[200px] text-base font-bold">Location</TableHead>
               <TableHead className="w-[200px] text-base font-bold">
