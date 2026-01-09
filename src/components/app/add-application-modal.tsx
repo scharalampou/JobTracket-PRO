@@ -24,7 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState } from 'react';
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
-import { Plus, Scan, Loader2 } from 'lucide-react';
+import { Plus, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -141,7 +141,7 @@ export function AddApplicationModal() {
                       <Input type="url" placeholder="https://..." {...field} />
                     </FormControl>
                     <Button type="button" variant="outline" size="icon" onClick={handleScanUrl} disabled={isScanning}>
-                      {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
+                      {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
                       <span className="sr-only">Scan URL</span>
                     </Button>
                   </div>
