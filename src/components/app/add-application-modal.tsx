@@ -11,12 +11,10 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Form,
   FormControl,
@@ -27,30 +25,26 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
-import { Plus, Wand2, Loader2 } from 'lucide-react';
+import { Plus, Wand2, Loader2, CalendarIcon } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-
-const currentYear = new Date().getFullYear();
-const months = Array.from({ length: 12 }, (_, i) => ({
-  value: i + 1,
-  label: new Date(0, i).toLocaleString('default', { month: 'long' }),
-}));
-const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL.').or(z.literal('')),
   company: z.string().min(1, 'Company name is required.'),
   role: z.string().min(1, 'Role is required.'),
   location: z.string().min(1, 'Location is required.'),
-  day: z.string().min(1, 'Day is required.'),
-  month: z.string().min(1, 'Month is required.'),
-  year: z.string().min(1, 'Year is required.'),
+  dateApplied: z.date({
+    required_error: 'A date is required.',
+  }),
 });
 
 export function AddApplicationModal() {
@@ -66,33 +60,19 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
-      day: String(new Date().getDate()),
-      month: String(new Date().getMonth() + 1),
-      year: String(new Date().getFullYear()),
+      dateApplied: new Date(),
     },
   });
 
-  const selectedMonth = form.watch('month');
-  const selectedYear = form.watch('year');
-
-  const daysInMonth = useMemo(() => {
-    const yearNum = parseInt(selectedYear, 10);
-    const monthNum = parseInt(selectedMonth, 10);
-    if (!isNaN(yearNum) && !isNaN(monthNum)) {
-      return new Date(yearNum, monthNum, 0).getDate();
-    }
-    return 31; // Default to 31 if month/year not set
-  }, [selectedMonth, selectedYear]);
-
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-
-
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const { day, month, year, ...rest } = values;
-    const dateApplied = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    
-    addApplication({ ...rest, dateApplied });
-    form.reset();
+    addApplication(values);
+    form.reset({
+      jobDescriptionUrl: '',
+      company: '',
+      role: '',
+      location: '',
+      dateApplied: new Date(),
+    });
     setOpen(false);
     toast({
       title: 'Job Added',
@@ -213,83 +193,57 @@ export function AddApplicationModal() {
               />
             </div>
             
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Remote" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-3 gap-4">
-               <FormField
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
                 control={form.control}
-                name="month"
+                name="location"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Remote" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateApplied"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date Applied</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Month" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {months.map(m => (
-                          <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="day"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-background'>.</FormLabel>
-                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Day" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {days.map(d => (
-                          <SelectItem key={d} value={String(d)}>{d}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-background'>.</FormLabel>
-                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {years.map(y => (
-                          <SelectItem key={y} value={String(y)}>{y}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
