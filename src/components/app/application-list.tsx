@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
 import type { ApplicationStatus } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 type SortKey = keyof JobApplication | '';
 
@@ -25,8 +26,16 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="w-full justify-start p-0 h-auto font-normal">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            'w-full justify-between p-1 h-auto font-normal rounded-md',
+            'hover:bg-accent/50 transition-colors'
+          )}
+        >
           <StatusBadge status={application.status} />
+          <MoreVertical className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
