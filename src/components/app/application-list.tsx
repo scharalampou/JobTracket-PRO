@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { Archive, ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook } from 'lucide-react';
+import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
@@ -70,9 +70,17 @@ export function ApplicationList() {
       'Final Round',
       'Offer Received'
     ];
-    const appliedApps = applications.filter(app => app.status === 'Applied' && !app.archived);
-    const activeApps = applications.filter(app => activeStatuses.includes(app.status) && !app.archived);
-    const archivedApps = applications.filter(app => app.archived);
+    const terminalStatuses: ApplicationStatus[] = ['No Offer', 'Rejected CV'];
+
+    const allApplied = applications.filter(app => app.status === 'Applied');
+    const allActive = applications.filter(app => activeStatuses.includes(app.status));
+    
+    const archivedApps = applications.filter(app => app.archived || terminalStatuses.includes(app.status));
+    const archivedIds = new Set(archivedApps.map(a => a.id));
+
+    const activeApps = allActive.filter(app => !archivedIds.has(app.id));
+    const appliedApps = allApplied.filter(app => !archivedIds.has(app.id));
+
     return { applied: appliedApps, active: activeApps, archived: archivedApps };
   }, [applications]);
 
@@ -91,11 +99,15 @@ export function ApplicationList() {
     return [...data].sort((a, b) => {
       const aValue = a[sortKey];
       const bValue = b[sortKey];
+      
+      // Ensure dates are compared correctly
+      const valA = aValue instanceof Date ? aValue.getTime() : aValue;
+      const valB = bValue instanceof Date ? bValue.getTime() : bValue;
 
-      if (aValue < bValue) {
+      if (valA < valB) {
         return sortDirection === 'asc' ? -1 : 1;
       }
-      if (aValue > bValue) {
+      if (valA > valB) {
         return sortDirection === 'asc' ? 1 : -1;
       }
       return 0;
@@ -138,7 +150,7 @@ export function ApplicationList() {
                 <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Notes</TableHead>
               )}
               <TableHead className="w-[100px] text-center">
-                {tableType !== 'archived' ? 'Close' : 'Info'}
+                Close
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -160,19 +172,23 @@ export function ApplicationList() {
                 </TableCell>
                  {tableType === 'archived' && (
                     <TableCell>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="flex items-center gap-1 cursor-default text-muted-foreground">
-                              <Notebook className="h-4 w-4" />
-                              <span className="truncate max-w-[100px]">{app.notes}</span>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-[300px]">
-                            <p className="text-sm">{app.notes}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      {app.notes ? (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex items-center gap-1 cursor-default text-muted-foreground">
+                                <Notebook className="h-4 w-4" />
+                                <span className="truncate max-w-[100px]">{app.notes}</span>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[300px]">
+                              <p className="text-sm">{app.notes}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : (
+                         <span className="text-muted-foreground">N/A</span>
+                      )}
                     </TableCell>
                   )}
                  <TableCell className="text-center">
