@@ -213,9 +213,9 @@ export function ApplicationList() {
     <ScrollArea>
     <Tabs defaultValue="active" className="w-full">
       <TabsList className="grid w-full grid-cols-3 md:w-full">
-        <TabsTrigger value="active">Active</TabsTrigger>
-        <TabsTrigger value="applied">Applied</TabsTrigger>
-        <TabsTrigger value="archived">Archived</TabsTrigger>
+        <TabsTrigger value="active" className="green-active-tab">Active</TabsTrigger>
+        <TabsTrigger value="applied" className="green-active-tab">Applied</TabsTrigger>
+        <TabsTrigger value="archived" className="green-active-tab">Archived</TabsTrigger>
       </TabsList>
       <TabsContent value="active">{renderTable(active, 'active')}</TabsContent>
       <TabsContent value="applied">{renderTable(applied, 'applied')}</TabsContent>

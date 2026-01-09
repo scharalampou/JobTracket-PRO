@@ -71,3 +71,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .green-active-tab[data-state=active] {
+    @apply text-white;
+  }
+  
+  html:not(.dark) .green-active-tab[data-state=active] {
+    background-color: #4DAA57;
+  }
+}
