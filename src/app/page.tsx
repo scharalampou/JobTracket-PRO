@@ -11,6 +11,7 @@ import { EmailPasswordForm } from '@/components/auth/EmailPasswordForm';
 import { useUser } from '@/firebase';
 import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 function LoadingScreen({ message }: { message: string }) {
   return (
@@ -45,16 +46,18 @@ export default function Home({ params, searchParams }: { params: {}; searchParam
   }
 
   const renderUnauthenticatedView = () => (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4 text-center">
-      <div className="mx-auto grid w-[350px] gap-6">
-        <div className="grid gap-2 text-center">
-           <h1 className="text-3xl font-bold">Sign In</h1>
-           <p className="text-balance text-muted-foreground">
-            Enter your email below to login to your account
-          </p>
-        </div>
-        <EmailPasswordForm />
-      </div>
+    <div className="flex flex-1 flex-col items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-sm">
+        <CardHeader className="text-center">
+           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+           <CardDescription>
+            Sign in or create an account to track your job applications.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EmailPasswordForm />
+        </CardContent>
+      </Card>
     </div>
   );
 
@@ -75,7 +78,7 @@ export default function Home({ params, searchParams }: { params: {}; searchParam
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
         <div className="flex items-center gap-2">
           <Logo />
           <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
