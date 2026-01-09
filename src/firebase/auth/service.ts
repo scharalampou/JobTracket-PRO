@@ -1,4 +1,3 @@
-
 'use client';
 
 import { 
@@ -16,13 +15,14 @@ import { FirestorePermissionError } from '@/firebase/errors';
 /**
  * Initiates the Google Sign-In flow using a redirect.
  * @param auth - The Firebase Auth instance.
- * @param firestore - The Firestore instance.
  */
-export function signInWithGoogle(auth: Auth, firestore: Firestore) {
+export function signInWithGoogle(auth: Auth) {
   const provider = new GoogleAuthProvider();
   // It's better to call signInWithRedirect and not await it,
   // as it navigates away from the current page.
   signInWithRedirect(auth, provider).catch((error) => {
+    // This catch is for potential errors during the redirect initiation,
+    // though they are rare. The main error handling happens with getRedirectResult.
     console.error("Error starting Google sign-in redirect:", error);
   });
 }
