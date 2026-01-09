@@ -8,16 +8,16 @@ type StatusBadgeProps = {
 };
 
 const statusColors: Record<ApplicationStatus, string> = {
-  Applied: 'bg-sky-200/20 text-sky-400 border-sky-300/30 hover:bg-sky-200/30',
-  'Screening with Recruiter': 'bg-cyan-200/20 text-cyan-400 border-cyan-300/30 hover:bg-cyan-200/30',
-  '1st Interview': 'bg-teal-200/20 text-teal-400 border-teal-300/30 hover:bg-teal-200/30',
-  '2nd Interview': 'bg-blue-200/20 text-blue-400 border-blue-300/30 hover:bg-blue-200/30',
-  '3rd Interview': 'bg-indigo-200/20 text-indigo-400 border-indigo-300/30 hover:bg-indigo-200/30',
-  'Task Stage': 'bg-yellow-200/20 text-yellow-400 border-yellow-300/30 hover:bg-yellow-200/30',
-  'Final Round': 'bg-purple-200/20 text-purple-400 border-purple-300/30 hover:bg-purple-200/30',
-  'Offer Received': 'bg-green-200/20 text-green-400 border-green-300/30 hover:bg-green-200/30',
-  'No Offer': 'bg-red-200/20 text-red-400 border-red-300/30 hover:bg-red-200/30',
-  'Rejected CV': 'bg-orange-200/20 text-orange-400 border-orange-300/30 hover:bg-orange-200/30',
+  Applied: 'border-transparent bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300',
+  'Screening with Recruiter': 'border-transparent bg-cyan-100 text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-300',
+  '1st Interview': 'border-transparent bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300',
+  '2nd Interview': 'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
+  '3rd Interview': 'border-transparent bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300',
+  'Task Stage': 'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
+  'Final Round': 'border-transparent bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
+  'Offer Received': 'border-transparent bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+  'No Offer': 'border-transparent bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
+  'Rejected CV': 'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300',
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
