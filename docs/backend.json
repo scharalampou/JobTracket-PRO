@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "JobApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "JobApplication",
+      "type": "object",
+      "description": "Represents a job application submitted by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the JobApplication entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N JobApplication)"
+        },
+        "company": {
+          "type": "string",
+          "description": "Name of the company the application was submitted to."
+        },
+        "role": {
+          "type": "string",
+          "description": "The job title or role applied for."
+        },
+        "jobDescriptionLink": {
+          "type": "string",
+          "description": "URL to the job description."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date when the application was submitted.",
+          "format": "date-time"
+        },
+        "location": {
+          "type": "string",
+          "description": "Location of the job (e.g., city, state, country, or 'Remote')."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the application in the pipeline (e.g., Applied, Recruiter Call, Interview, Offer, Rejected)."
+        },
+        "archived": {
+          "type": "boolean",
+          "description": "Indicates if the application is archived (e.g., after rejection)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "company",
+        "role",
+        "applicationDate",
+        "location",
+        "status",
+        "archived"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the JobTracker Pro application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity.  This will correspond to the Firebase user ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User's display name."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. The 'userId' corresponds to the Firebase user ID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase user ID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/jobApplications/{jobApplicationId}",
+        "definition": {
+          "entityName": "JobApplication",
+          "schema": {
+            "$ref": "#/backend/entities/JobApplication"
+          },
+          "description": "Stores job applications submitted by each user. Ensures only the authenticated user can access their job applications. Requires that the `userId` field in the `JobApplication` document matches the `userId` parameter in the path.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase user ID, representing the owner of the job applications."
+            },
+            {
+              "name": "jobApplicationId",
+              "description": "Unique identifier for the job application."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage user data and job applications effectively while ensuring security and scalability. It leverages path-based ownership for user-specific data and avoids hierarchical authorization dependencies.\n\n*   `/users/{userId}`: Stores user profiles. Each user has a dedicated document keyed by their Firebase `uid`. This collection is primarily for storing user profile information.\n*   `/users/{userId}/jobApplications/{jobApplicationId}`: Stores job applications submitted by each user. This structure ensures that only the authenticated user can access their job applications.\n\n**Authorization Independence:**\n*   Authorization independence is achieved by using path-based ownership. Each job application is stored under the user's document path, eliminating the need to check parent document data for authorization. The `userId` field within the `jobApplication` document MUST match the `userId` in the path.\n\n**QAPs (Rules are not Filters):**\n*   The structure is segregated by user. This allows for simple list operations, as each user can only access their job applications. The rules do not need to filter based on user ID, as the path itself enforces this restriction.\n\nThis design ensures that security rules can be written clearly and efficiently without relying on complex `get()` calls. Each collection is homogeneous in its security posture, simplifying rule creation and maintenance."
+  }
+}
