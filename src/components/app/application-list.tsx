@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, MoreVertical } from 'lucide-react';
+import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -35,7 +35,7 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
           )}
         >
           <StatusBadge status={application.status} />
-          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
