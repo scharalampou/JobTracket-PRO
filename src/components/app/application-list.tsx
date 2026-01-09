@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook } from 'lucide-react';
+import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
@@ -72,16 +72,13 @@ export function ApplicationList() {
     ];
     const terminalStatuses: ApplicationStatus[] = ['No Offer', 'Rejected CV'];
 
-    const allApplied = applications.filter(app => app.status === 'Applied');
-    const allActive = applications.filter(app => activeStatuses.includes(app.status));
+    const allArchived = applications.filter(app => app.archived || terminalStatuses.includes(app.status));
+    const archivedIds = new Set(allArchived.map(a => a.id));
     
-    const archivedApps = applications.filter(app => app.archived || terminalStatuses.includes(app.status));
-    const archivedIds = new Set(archivedApps.map(a => a.id));
+    const allActive = applications.filter(app => activeStatuses.includes(app.status) && !archivedIds.has(app.id));
+    const allApplied = applications.filter(app => app.status === 'Applied' && !archivedIds.has(app.id));
 
-    const activeApps = allActive.filter(app => !archivedIds.has(app.id));
-    const appliedApps = allApplied.filter(app => !archivedIds.has(app.id));
-
-    return { applied: appliedApps, active: activeApps, archived: archivedApps };
+    return { applied: allApplied, active: allActive, archived: allArchived };
   }, [applications]);
 
   const handleSort = (key: SortKey) => {
