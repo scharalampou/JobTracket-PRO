@@ -1,18 +1,19 @@
 'use client';
 
 import type { JobApplication, ApplicationStatus } from '@/lib/types';
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import {
   useCollection,
   useFirebase,
   useMemoFirebase,
   addDocumentNonBlocking,
   updateDocumentNonBlocking,
+  type WithId,
 } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, Timestamp } from 'firebase/firestore';
 
 // Omit ID and userId, as they will be handled automatically
-type NewApplication = Omit<JobApplication, 'id' | 'userId' | 'status'>;
+type NewApplication = Omit<JobApplication, 'id' | 'userId' | 'status' | 'dateApplied'>;
 
 interface JobApplicationsContextType {
   applications: JobApplication[];
@@ -31,7 +32,16 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
     return collection(firestore, `users/${user.uid}/jobApplications`);
   }, [firestore, user]);
 
-  const { data: applications, isLoading } = useCollection<JobApplication>(jobApplicationsQuery);
+  const { data: rawApplications, isLoading } = useCollection<Omit<JobApplication, 'dateApplied'> & { dateApplied: Timestamp }>(jobApplicationsQuery);
+
+  const applications = useMemo(() => {
+    if (!rawApplications) return [];
+    return rawApplications.map(app => ({
+      ...app,
+      dateApplied: app.dateApplied.toDate(),
+    }));
+  }, [rawApplications]);
+
 
   const addApplication = useCallback((application: NewApplication) => {
     if (!user || !firestore) return;
@@ -40,6 +50,7 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
       ...application,
       userId: user.uid,
       status: 'Applied',
+      dateApplied: new Date(),
     };
     
     const collectionRef = collection(firestore, `users/${user.uid}/jobApplications`);
