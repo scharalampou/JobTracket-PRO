@@ -282,7 +282,7 @@ export function AddApplicationModal() {
                   name="year"
                   render={({ field }) => (
                     <FormItem>
-                      <Select onValuechange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Year" />
