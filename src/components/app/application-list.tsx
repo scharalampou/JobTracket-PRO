@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
@@ -126,7 +127,7 @@ export function ApplicationList() {
       return <div className="text-center text-muted-foreground py-10">No applications to display.</div>
     }
     return (
-      <div className="rounded-lg border">
+      <div className="rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
