@@ -183,7 +183,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel>Company *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Google" {...field} />
                     </FormControl>
@@ -196,7 +196,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>Role *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Software Engineer" {...field} />
                     </FormControl>
@@ -212,7 +212,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel>Location *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Remote" {...field} />
                     </FormControl>
@@ -225,7 +225,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                   name="dateApplied"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Date Applied</FormLabel>
+                      <FormLabel>Date Applied *</FormLabel>
                       <FormControl>
                          <Input 
                             type="date"
