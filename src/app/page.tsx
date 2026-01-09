@@ -53,8 +53,8 @@ export default function Home() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           {user && <AddApplicationModal />}
-          <ThemeToggle />
           <UserProfile />
+          <ThemeToggle />
         </div>
       </header>
       {isUserLoading ? (
