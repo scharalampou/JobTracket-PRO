@@ -129,7 +129,7 @@ export function AddApplicationModal() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle className="font-headline">Log Application</DialogTitle>
+          <DialogTitle className="font-headline">New Application</DialogTitle>
           <DialogDescription>
             Enter the details of the job you applied for. You can autofill by adding the URL of the Job Listing and click on the <Wand2 className="inline-block h-4 w-4" /> icon!
           </DialogDescription>
