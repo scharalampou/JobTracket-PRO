@@ -122,7 +122,7 @@ export function AddApplicationModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="font-bold">
+        <Button className="font-bold bg-accent text-accent-foreground dark:text-white">
           <Plus className="-ml-1 mr-2 h-5 w-5" />
           Add Job
         </Button>
