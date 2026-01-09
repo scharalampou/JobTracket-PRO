@@ -42,6 +42,10 @@
         "archived": {
           "type": "boolean",
           "description": "Indicates if the application is archived (e.g., after rejection)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes or feedback from the interview process, added when closing an application."
         }
       },
       "required": [

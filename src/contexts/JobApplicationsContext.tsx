@@ -12,14 +12,14 @@ import {
 import { collection, doc, Timestamp } from 'firebase/firestore';
 
 // Omit ID and userId, as they will be handled automatically
-type NewApplication = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' >;
+type NewApplication = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes' >;
 
 interface JobApplicationsContextType {
   applications: JobApplication[];
   isLoading: boolean;
   addApplication: (application: NewApplication) => void;
   updateApplicationStatus: (id: string, status: ApplicationStatus) => void;
-  archiveApplication: (id: string) => void;
+  archiveApplication: (id: string, notes?: string) => void;
 }
 
 const JobApplicationsContext = createContext<JobApplicationsContextType | undefined>(undefined);
@@ -71,10 +71,11 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
     updateDocumentNonBlocking(docRef, { status });
   }, [firestore, user]);
 
-  const archiveApplication = useCallback((id: string) => {
+  const archiveApplication = useCallback((id: string, notes?: string) => {
     if (!user || !firestore) return;
     const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
-    updateDocumentNonBlocking(docRef, { archived: true });
+    const finalNotes = notes && notes.trim() ? notes.trim() : 'N/A';
+    updateDocumentNonBlocking(docRef, { archived: true, notes: finalNotes });
   }, [firestore, user]);
 
 

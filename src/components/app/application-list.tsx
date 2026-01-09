@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { Archive, ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays } from 'lucide-react';
+import { Archive, ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
@@ -14,7 +14,7 @@ import type { ApplicationStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ScrollArea } from '../ui/scroll-area';
-import { ConfirmDialog } from './confirm-dialog';
+import { CloseApplicationDialog } from './close-application-dialog';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
@@ -56,7 +56,7 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
 
 
 export function ApplicationList() {
-  const { applications, archiveApplication } = useJobApplications();
+  const { applications } = useJobApplications();
   const [sortKey, setSortKey] = useState<SortKey>('dateApplied');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
@@ -134,6 +134,9 @@ export function ApplicationList() {
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
+              {tableType === 'archived' && (
+                <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Notes</TableHead>
+              )}
               <TableHead className="w-[100px] text-center">
                 {tableType !== 'archived' ? 'Close' : 'Info'}
               </TableHead>
@@ -155,28 +158,26 @@ export function ApplicationList() {
                 <TableCell>
                   <StatusDropdown application={app} />
                 </TableCell>
+                 {tableType === 'archived' && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="flex items-center gap-1 cursor-default text-muted-foreground">
+                              <Notebook className="h-4 w-4" />
+                              <span className="truncate max-w-[100px]">{app.notes}</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[300px]">
+                            <p className="text-sm">{app.notes}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
                  <TableCell className="text-center">
                    {tableType !== 'archived' ? (
-                      <ConfirmDialog
-                        onConfirm={() => archiveApplication(app.id)}
-                        title="Are you sure?"
-                        description={`This will close your application for the ${app.role} role at ${app.company} and move it to the archive.`}
-                        trigger={
-                           <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Archive className="h-4 w-4" />
-                                    <span className="sr-only">Close Application</span>
-                                </Button>
-                                </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Close Application</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        }
-                      />
+                     <CloseApplicationDialog application={app} />
                    ) : (
                       <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
                         Closed

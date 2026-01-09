@@ -23,4 +23,5 @@ export type JobApplication = {
   status: ApplicationStatus;
   dateApplied: Date;
   archived: boolean;
+  notes?: string; // Optional notes for when closing an application
 };
