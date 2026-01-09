@@ -41,40 +41,37 @@ function LoadingScreen({ message }: { message: string }) {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const { auth, firestore } = useFirebase();
-  // isCheckingRedirect will be true on initial mount until we've processed any potential redirect.
-  const [isCheckingRedirect, setIsCheckingRedirect] = useState(true);
+  const [isProcessingAuth, setIsProcessingAuth] = useState(true);
 
 
   useEffect(() => {
-    // This effect runs once on mount to handle any pending sign-in redirects.
-    const handleRedirect = async () => {
+    const processRedirect = async () => {
+      if (!auth || !firestore) return;
       try {
         await getRedirectResult(auth, firestore);
       } catch (error) {
-        // This can happen if the user is not coming from a redirect (e.g. auth/no-auth-event)
-        // We can safely ignore those, but log others.
          if ((error as any).code !== 'auth/no-auth-event') {
-            console.error("Error handling redirect result:", error);
+            console.error("Error processing redirect result:", error);
          }
       } finally {
-        // Once we've checked, we can stop showing the "Signing in..." message.
-        // The onAuthStateChanged listener will then correctly report the user status.
-        setIsCheckingRedirect(false);
+        // This indicates that the redirect check is done. The onAuthStateChanged
+        // listener will now provide the definitive user state.
+        setIsProcessingAuth(false);
       }
     };
-    handleRedirect();
+    processRedirect();
   }, [auth, firestore]);
 
-
-  // Show a loading screen while checking for a redirect or while the user state is initially loading.
-  if (isCheckingRedirect || isUserLoading) {
-    const message = isCheckingRedirect ? "Finalizing sign in..." : "Loading user...";
-    return <LoadingScreen message={message} />;
-  }
-
   const handleSignIn = () => {
+    if (!auth || !firestore) return;
     signInWithGoogle(auth, firestore);
   };
+
+  // Show a loading screen while we process a potential redirect OR while Firebase is initializing the user state.
+  if (isProcessingAuth || isUserLoading) {
+    const message = isProcessingAuth ? "Finalizing sign in..." : "Loading user data...";
+    return <LoadingScreen message={message} />;
+  }
 
 
   const renderUnauthenticatedView = () => (
