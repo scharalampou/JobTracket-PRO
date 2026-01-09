@@ -16,9 +16,8 @@ import { LogIn } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 
-function AuthRedirectHandler() {
+function AuthRedirectHandler({ onRedirectHandled }: { onRedirectHandled: () => void }) {
   const { auth, firestore } = useFirebase();
-  const [isHandlingRedirect, setIsHandlingRedirect] = useState(true);
 
   useEffect(() => {
     const handleRedirect = async () => {
@@ -27,26 +26,24 @@ function AuthRedirectHandler() {
       } catch (error) {
         console.error("Error handling redirect result:", error);
       } finally {
-        setIsHandlingRedirect(false);
+        onRedirectHandled();
       }
     };
     handleRedirect();
-  }, [auth, firestore]);
+  }, [auth, firestore, onRedirectHandled]);
 
-  if (isHandlingRedirect) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <p>Signing in...</p>
+    </div>
+  );
 }
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const { auth, firestore } = useFirebase();
+  const [isHandlingRedirect, setIsHandlingRedirect] = useState(true);
+
 
   const renderUnauthenticatedView = () => (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4 text-center">
@@ -55,7 +52,7 @@ export default function Home() {
       <p className="max-w-md text-muted-foreground">
         Sign in to manage your job applications, track your progress, and stay organized in your job search.
       </p>
-      <Button onClick={() => signInWithGoogle(auth, firestore)}>
+      <Button onClick={() => signInWithGoogle(auth)}>
         <LogIn className="mr-2" /> Sign In with Google
       </Button>
     </div>
@@ -76,6 +73,9 @@ export default function Home() {
       </main>
   );
 
+  // The main content is not rendered until the redirect is handled and the initial user state is loaded.
+  const shouldRenderContent = !isHandlingRedirect && !isUserLoading;
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
@@ -91,12 +91,18 @@ export default function Home() {
           <ThemeToggle />
         </div>
       </header>
-      <AuthRedirectHandler />
-      {isUserLoading ? (
-        <div className="flex flex-1 items-center justify-center">
+      
+      {isHandlingRedirect ? (
+        <AuthRedirectHandler onRedirectHandled={() => setIsHandlingRedirect(false)} />
+      ) : (
+        shouldRenderContent ? (
+          user ? renderAuthenticatedView() : renderUnauthenticatedView()
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
             <p>Loading...</p>
-        </div>
-      ) : user ? renderAuthenticatedView() : renderUnauthenticatedView()}
+          </div>
+        )
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 export async function signInWithGoogle(auth: Auth) {
   const provider = new GoogleAuthProvider();
   try {
+    // No firestore instance needed here, it's for handling the result.
     await signInWithRedirect(auth, provider);
   } catch (error) {
     console.error("Error starting Google sign-in redirect:", error);
