@@ -30,15 +30,19 @@
         },
         "location": {
           "type": "string",
-          "description": "The location of the job (Remote or Country)."
+          "description": "The location of the job (Remote or City, Country)."
         },
         "status": {
           "type": "string",
-          "description": "Current stage in the application pipeline (Applied, Recruiter Call, etc.)."
+          "description": "Current status of the application in the pipeline. Reference to PipelineStage."
+        },
+        "pipelineStageId": {
+          "type": "string",
+          "description": "Reference to PipelineStage. (Relationship: PipelineStage 1:N JobApplication)"
         },
         "isArchived": {
           "type": "boolean",
-          "description": "Indicates if the application is archived."
+          "description": "Indicates if the job application is archived."
         }
       },
       "required": [
@@ -48,7 +52,33 @@
         "applicationDate",
         "location",
         "status",
+        "pipelineStageId",
         "isArchived"
+      ]
+    },
+    "PipelineStage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PipelineStage",
+      "type": "object",
+      "description": "Represents a stage in the job application pipeline.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PipelineStage entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the pipeline stage (e.g., Applied, Recruiter Call)."
+        },
+        "order": {
+          "type": "number",
+          "description": "The order of the stage in the pipeline."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "order"
       ]
     }
   },
@@ -67,20 +97,40 @@
           "schema": {
             "$ref": "#/backend/entities/JobApplication"
           },
-          "description": "Stores job application data for each user. Ensures that only the authenticated user can access their own job applications through path-based ownership.",
+          "description": "Stores job applications for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
           "params": [
             {
               "name": "userId",
-              "description": "The unique identifier of the user."
+              "description": "The ID of the user who owns the job application."
             },
             {
               "name": "jobApplicationId",
-              "description": "The unique identifier of the job application."
+              "description": "The ID of the job application."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pipelineStages/{pipelineStageId}",
+        "definition": {
+          "entityName": "PipelineStage",
+          "schema": {
+            "$ref": "#/backend/entities/PipelineStage"
+          },
+          "description": "Stores pipeline stages for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who owns the pipeline stage."
+            },
+            {
+              "name": "pipelineStageId",
+              "description": "The ID of the pipeline stage."
             }
           ]
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability for the JobTracker Pro application. Job applications are stored under each user's document to ensure that only the authenticated user has access to their own applications. This structure inherently provides path-based ownership, simplifying security rules and eliminating the need for complex authorization logic. This approach ensures authorization independence, enabling atomic operations and easy debugging.\n\nTo support the required QAPs (Queries are not Filters), the structure avoids mixing data with different access requirements in the same collection. Job applications are strictly segregated by user, so listing operations are naturally secured by Firestore's path-based security. There is no need for filtering based on user roles or permissions within the queries themselves.\n\nThe `isArchived` flag is included within each job application document. This allows for efficient filtering of archived applications on the client-side without compromising the integrity of the main collection. This setup ensures that the application can easily distinguish between active and archived applications while maintaining data clarity and predictability."
+    "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, following the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Authorization Independence is achieved by avoiding `get()` calls in security rules, ensuring that operations are atomic and easier to debug. The design leverages structural segregation and access modeling to simplify security rules.\n\nJob Applications are stored under each user's document to enforce clear ownership. Pipeline Stages are also stored under the user document. This design uses path-based ownership (`/users/{userId}/jobApplications/{jobApplicationId}`) for private data and hierarchical paths for user-owned entities. All documents in a collection share the same security requirements, and consistent patterns are used for authorization using path based ownership."
   }
 }

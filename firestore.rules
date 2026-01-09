@@ -1,43 +1,37 @@
 /**
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model. All user data is stored
- * in subcollections under a document path unique to that user's ID. This ensures
- * that users can only ever access their own data, providing strong security and
- * data isolation by default.
+ * This ruleset enforces a strict user-ownership model where all user-generated
+ * data is stored within a private data tree specific to that user. A user has
+ * full control over their own data but has absolutely no access (read or write)
+ * to the data of any other user. The security model relies entirely on the
+ * document path for authorization, which is simple, performant, and avoids
+ * costly cross-document reads in rules.
  *
  * Data Structure:
- * All data is organized hierarchically under the `/users/{userId}` path. For
- * example, a user's job applications are stored at:
- * /users/{userId}/jobApplications/{jobApplicationId}.
- * This path-based security model is simple, performant, and easy to maintain.
+ * All application data is segregated by user under the top-level `/users`
+ * collection. Each user's data, including their job applications and pipeline
+ * stages, is nested hierarchically under their unique user ID:
+ *   /users/{userId}/jobApplications/{jobApplicationId}
+ *   /users/{userId}/pipelineStages/{pipelineStageId}
  *
  * Key Security Decisions:
- * - Default Deny: Access is implicitly denied for any path not explicitly defined.
- * - Signed-In Users Only: All operations require a user to be authenticated.
- * - Strict Ownership: Users can only read, write, or query their own data.
- *   There is no concept of shared or public data in this model.
+ * - Path-Based Ownership: Authorization is determined solely by matching the
+ *   `userId` in the document path with the authenticated user's UID. This
+ *   eliminates the need for denormalized `ownerId` fields on documents.
+ * - No Public Data: There are no publicly readable collections. All data is
+ *   private to the owner.
  * - No User Listing: It is not possible to list documents in the top-level
- *   /users collection, preventing enumeration of all application users.
- *
- * Denormalization for Authorization:
- * The security model relies on path-based authorization, where the user's UID
- * is part of the document path. This is the most efficient method as it does
- * not require reading other documents (using `get()` or `exists()`) to make an
- * authorization decision.
- *
- * Structural Segregation:
- * The data is naturally segregated by user, which aligns perfectly with
- * Firestore's querying capabilities. This prevents data leakage and ensures
- * that list operations are always scoped to the currently authenticated user's
- * own data.
+ *   `/users` collection, preventing enumeration of application users.
+ * - Default Deny: Access is denied by default. Permissions must be
+ *   explicitly granted.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    //-------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     // Helper Functions
-    //-------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
     /**
      * Returns true if the user is authenticated.
@@ -47,68 +41,55 @@ service cloud.firestore {
     }
 
     /**
-     * Returns true if the requesting user's UID matches the provided userId.
-     * This is the core of the ownership model.
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the core of our path-based ownership model.
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
     /**
-     * Returns true if the document exists and the user is the owner.
-     * Used for safe update and delete operations.
+     * For update and delete operations, ensures the user is the owner AND the
+     * document they are trying to modify actually exists.
      */
     function isExistingOwner(userId) {
       return isOwner(userId) && resource != null;
     }
 
-    /**
-     * Validates required data integrity for a new JobApplication.
-     * In prototyping mode, we only validate fields critical for establishing
-     * relationships, not the entire data shape.
-     */
-    function hasValidJobApplicationDataOnCreate(jobApplicationId) {
-      let data = request.resource.data;
-      // Enforces that the document's internal ID matches its path ID.
-      return data.id == jobApplicationId;
-    }
+
+    // ----------------------------------------------------------------------
+    // User Data Collections
+    // ----------------------------------------------------------------------
 
     /**
-     * Enforces immutability for critical relational fields on update.
-     * Prevents the ownership link or primary identifier from being changed.
-     */
-    function hasImmutableJobApplicationData() {
-      // The internal 'id' field cannot be changed after creation.
-      return request.resource.data.id == resource.data.id;
-    }
-
-
-    //-------------------------------------------------------------------------
-    // Collection Rules
-    //-------------------------------------------------------------------------
-
-    /**
-     * @description
-     *   Secures a user's collection of job applications. Only the owner of the
-     *   data tree can read, write, or delete their own applications.
-     * @path
-     *   /users/{userId}/jobApplications/{jobApplicationId}
-     * @allow
-     *   (create) An authenticated user creating a job application in their own subcollection.
-     *   `auth.uid = 'user123'`, `create /users/user123/jobApplications/app456`
-     * @deny
-     *   (get) A user attempting to read another user's job application.
-     *   `auth.uid = 'userABC'`, `get /users/user123/jobApplications/app456`
-     * @principle
-     *   Restricts access to a user's own data tree. Enforces that a user can only
-     *   operate within the `/users/{their-own-uid}` path.
+     * @description Controls access to a user's private job applications.
+     * @path /users/{userId}/jobApplications/{jobApplicationId}
+     * @allow (create) An authenticated user creating a job application for themselves.
+     *   `auth: { uid: 'user_abc' }` -> `create /users/user_abc/jobApplications/app_123`
+     * @deny (get) An authenticated user trying to read another user's job application.
+     *   `auth: { uid: 'user_xyz' }` -> `get /users/user_abc/jobApplications/app_123`
+     * @principle Restricts all access to a user's own private data tree.
      */
     match /users/{userId}/jobApplications/{jobApplicationId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && hasValidJobApplicationDataOnCreate(jobApplicationId);
-      allow update: if isExistingOwner(userId) && hasImmutableJobApplicationData();
-      allow delete: if isExistingOwner(userId);
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update, delete: if isExistingOwner(userId);
     }
+
+    /**
+     * @description Controls access to a user's private pipeline stages.
+     * @path /users/{userId}/pipelineStages/{pipelineStageId}
+     * @allow (update) An authenticated user updating one of their own pipeline stages.
+     *   `auth: { uid: 'user_abc' }` -> `update /users/user_abc/pipelineStages/stage_xyz`
+     * @deny (delete) An authenticated user trying to delete another user's stage.
+     *   `auth: { uid: 'user_xyz' }` -> `delete /users/user_abc/pipelineStages/stage_xyz`
+     * @principle Restricts all access to a user's own private data tree.
+     */
+    match /users/{userId}/pipelineStages/{pipelineStageId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update, delete: if isExistingOwner(userId);
+    }
+
   }
 }
