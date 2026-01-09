@@ -5,6 +5,7 @@ import { ApplicationList } from '@/components/app/application-list';
 import { Dashboard } from '@/components/app/dashboard';
 import { LocationChart } from '@/components/app/location-chart';
 import { Logo } from '@/components/app/logo';
+import { ThemeToggle } from '@/components/app/theme-toggle';
 
 export default function Home() {
   return (
@@ -16,8 +17,9 @@ export default function Home() {
             JobTracker Pro
           </h1>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <AddApplicationModal />
+          <ThemeToggle />
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
