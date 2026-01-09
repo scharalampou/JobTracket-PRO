@@ -37,7 +37,7 @@ const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
 
 const formSchema = z.object({
-  jobDescriptionUrl: z.string().url('Please enter a valid URL'),
+  jobDescriptionUrl: z.string().url('Please enter a valid URL').or(z.literal('')),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Role is required'),
   location: z.string().min(1, 'Location is required'),
