@@ -85,6 +85,16 @@ export function ApplicationList() {
     });
   };
 
+  const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: React.ReactNode }) => (
+    <div
+      onClick={() => handleSort(key)}
+      className="flex items-center cursor-pointer hover:text-foreground transition-colors"
+    >
+      {children}
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </div>
+  );
+
   const renderTable = (data: JobApplication[]) => {
     if (data.length === 0) {
       return <div className="text-center text-muted-foreground py-10">No applications to display.</div>
@@ -95,25 +105,17 @@ export function ApplicationList() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">
-                <Button variant="ghost" onClick={() => handleSort('company')}>
-                  Company <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <SortableHeader sortKey="company">Company</SortableHeader>
               </TableHead>
               <TableHead>
-                <Button variant="ghost" onClick={() => handleSort('role')}>
-                  Role <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <SortableHeader sortKey="role">Role</SortableHeader>
               </TableHead>
               <TableHead className="w-[150px]">
-                <Button variant="ghost" onClick={() => handleSort('dateApplied')}>
-                  Date Applied <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <SortableHeader sortKey="dateApplied">Date Applied</SortableHeader>
               </TableHead>
               <TableHead className="w-[200px]">Location</TableHead>
               <TableHead className="w-[200px]">
-                <Button variant="ghost" onClick={() => handleSort('status')}>
-                  Status <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
             </TableRow>
           </TableHeader>
