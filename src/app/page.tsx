@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AddApplicationModal } from '@/components/app/add-application-modal';
@@ -9,10 +10,39 @@ import { ThemeToggle } from '@/components/app/theme-toggle';
 import { UserProfile } from '@/components/auth/UserProfile';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
-import { signInWithGoogle } from '@/firebase/auth/service';
+import { getRedirectResult, signInWithGoogle } from '@/firebase/auth/service';
 import { useFirebase } from '@/firebase/provider';
 import { LogIn } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useEffect, useState } from 'react';
+
+function AuthRedirectHandler() {
+  const { auth, firestore } = useFirebase();
+  const [isHandlingRedirect, setIsHandlingRedirect] = useState(true);
+
+  useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        await getRedirectResult(auth, firestore);
+      } catch (error) {
+        console.error("Error handling redirect result:", error);
+      } finally {
+        setIsHandlingRedirect(false);
+      }
+    };
+    handleRedirect();
+  }, [auth, firestore]);
+
+  if (isHandlingRedirect) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -61,6 +91,7 @@ export default function Home() {
           <ThemeToggle />
         </div>
       </header>
+      <AuthRedirectHandler />
       {isUserLoading ? (
         <div className="flex flex-1 items-center justify-center">
             <p>Loading...</p>
