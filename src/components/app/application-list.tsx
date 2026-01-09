@@ -6,11 +6,41 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon } from 'lucide-react';
+import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { APPLICATION_STATUSES } from '@/lib/types';
+import type { ApplicationStatus } from '@/lib/types';
 
 type SortKey = keyof JobApplication | '';
+
+const StatusDropdown = ({ application }: { application: JobApplication }) => {
+  const { updateApplicationStatus } = useJobApplications();
+
+  const handleStatusChange = (newStatus: ApplicationStatus) => {
+    updateApplicationStatus(application.id, newStatus);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="w-full justify-start p-0 h-auto font-normal">
+          <StatusBadge status={application.status} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        {APPLICATION_STATUSES.map(status => (
+          <DropdownMenuItem key={status} onSelect={() => handleStatusChange(status)}>
+            <StatusBadge status={status} className="border-transparent px-0"/>
+            <span className="ml-2">{status}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 
 export function ApplicationList() {
   const { applications } = useJobApplications();
@@ -18,7 +48,7 @@ export function ApplicationList() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const { applied, active, archived } = useMemo(() => {
-    const archivedStatuses = ['No Offer', 'Ghosted', 'Accepted'];
+    const archivedStatuses: ApplicationStatus[] = ['No Offer', 'Rejected CV'];
     const appliedApps = applications.filter(app => app.status === 'Applied');
     const activeApps = applications.filter(app => !archivedStatuses.includes(app.status) && app.status !== 'Applied');
     const archivedApps = applications.filter(app => archivedStatuses.includes(app.status));
@@ -71,7 +101,7 @@ export function ApplicationList() {
                 </Button>
               </TableHead>
               <TableHead className="w-[200px]">Location</TableHead>
-              <TableHead className="w-[150px]">
+              <TableHead className="w-[200px]">
                 <Button variant="ghost" onClick={() => handleSort('status')}>
                   Status <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -89,7 +119,7 @@ export function ApplicationList() {
                   {app.location}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={app.status} />
+                  <StatusDropdown application={app} />
                 </TableCell>
               </TableRow>
             ))}

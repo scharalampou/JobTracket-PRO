@@ -1,13 +1,15 @@
 export const APPLICATION_STATUSES = [
   'Applied',
-  'Screening',
-  'Recruiter Call',
-  'Technical Interview',
+  'Screening with Recruiter',
+  '1st Interview',
+  '2nd Interview',
+  '3rd Interview',
+  'Task Stage',
   'Final Round',
-  'Offer',
+  'Offer Received',
   'Accepted',
   'No Offer',
-  'Ghosted',
+  'Rejected CV',
 ] as const;
 
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];

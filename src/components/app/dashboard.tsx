@@ -4,13 +4,23 @@ import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Briefcase, FileText, Handshake, Users } from 'lucide-react';
+import { ApplicationStatus } from '@/lib/types';
 
 export function Dashboard() {
   const { applications } = useJobApplications();
 
   const stats = useMemo(() => {
     const total = applications.length;
-    const interviewStages = ['Recruiter Call', 'Technical Interview', 'Final Round', 'Offer', 'Accepted'];
+    const interviewStages: ApplicationStatus[] = [
+      'Screening with Recruiter', 
+      '1st Interview', 
+      '2nd Interview', 
+      '3rd Interview',
+      'Task Stage',
+      'Final Round', 
+      'Offer Received', 
+      'Accepted'
+    ];
     const inInterview = applications.filter(app => interviewStages.includes(app.status)).length;
     
     const companiesInterviewed = new Set(
