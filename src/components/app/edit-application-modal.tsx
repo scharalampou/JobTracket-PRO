@@ -31,13 +31,16 @@ import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { JobApplication } from '@/lib/types';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { DatePicker } from '../ui/date-picker';
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   company: z.string().min(1, 'Company name is required.'),
   role: z.string().min(1, 'Role is required.'),
   location: z.string().min(1, 'Location is required.'),
-  dateApplied: z.string().min(1, 'Date applied is required.'),
+  dateApplied: z.date({
+    required_error: 'A date is required.',
+  }),
 });
 
 type EditApplicationModalProps = {
@@ -61,13 +64,13 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
         company: application.company,
         role: application.role,
         location: application.location,
-        dateApplied: new Date(application.dateApplied).toISOString().split('T')[0],
+        dateApplied: new Date(application.dateApplied),
       });
     }
   }, [open, application, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateApplication(application.id, { ...values, dateApplied: new Date(values.dateApplied) });
+    updateApplication(application.id, { ...values });
     setOpen(false);
     toast({
       title: 'Job Updated',
@@ -211,15 +214,16 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                   </FormItem>
                 )}
               />
-              <FormField
+               <FormField
                 control={form.control}
                 name="dateApplied"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date Applied *</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
+                     <DatePicker 
+                      date={field.value} 
+                      onDateChange={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

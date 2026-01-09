@@ -29,13 +29,16 @@ import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Plus, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { DatePicker } from '../ui/date-picker';
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   company: z.string().min(1, 'Company name is required.'),
   role: z.string().min(1, 'Role is required.'),
   location: z.string().min(1, 'Location is required.'),
-  dateApplied: z.string().min(1, 'Date applied is required.'),
+  dateApplied: z.date({
+    required_error: 'A date is required.',
+  }),
 });
 
 export function AddApplicationModal() {
@@ -51,18 +54,18 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
-      dateApplied: new Date().toISOString().split('T')[0],
+      dateApplied: new Date(),
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    addApplication({ ...values, dateApplied: new Date(values.dateApplied) });
+    addApplication({ ...values });
     form.reset({
       jobDescriptionUrl: '',
       company: '',
       role: '',
       location: '',
-      dateApplied: new Date().toISOString().split('T')[0],
+      dateApplied: new Date(),
     });
     setOpen(false);
     toast({
@@ -202,11 +205,12 @@ export function AddApplicationModal() {
                 control={form.control}
                 name="dateApplied"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date Applied *</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
+                    <DatePicker 
+                      date={field.value} 
+                      onDateChange={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
