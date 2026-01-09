@@ -9,7 +9,7 @@ import {
   signOut as firebaseSignOut,
   User
 } from 'firebase/auth';
-import { doc, setDoc, Firestore } from 'firebase/firestore';
+import { doc, setDoc, Firestore, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
@@ -40,6 +40,7 @@ function updateUserProfile(firestore: Firestore, user: User) {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
+        lastLogin: serverTimestamp(),
     };
 
     // Use non-blocking write and catch potential permission errors.

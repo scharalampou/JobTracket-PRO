@@ -50,6 +50,7 @@ export default function Home() {
       try {
         await getRedirectResult(auth, firestore);
       } catch (error) {
+         // This error is expected if the user just loads the page without a redirect.
          if ((error as any).code !== 'auth/no-auth-event') {
             console.error("Error processing redirect result:", error);
          }
@@ -59,6 +60,8 @@ export default function Home() {
         setIsProcessingAuth(false);
       }
     };
+
+    // Only run this once when the component mounts and firebase services are ready.
     processRedirect();
   }, [auth, firestore]);
 
