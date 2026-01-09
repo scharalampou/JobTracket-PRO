@@ -218,7 +218,7 @@ export function AddApplicationModal() {
                <DialogClose asChild>
                 <Button variant="ghost">Cancel</Button>
               </DialogClose>
-              <Button type="submit">Add Job</Button>
+              <Button type="submit">Add Application</Button>
             </DialogFooter>
           </form>
         </Form>
