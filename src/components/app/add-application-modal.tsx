@@ -53,6 +53,7 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
+      dateApplied: new Date(),
     },
   });
 
