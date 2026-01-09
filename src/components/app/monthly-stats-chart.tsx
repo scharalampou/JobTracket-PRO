@@ -2,7 +2,7 @@
 
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useMemo } from 'react';
 import { format, startOfMonth } from 'date-fns';
 import type { ApplicationStatus } from '@/lib/types';
@@ -43,7 +43,7 @@ export function MonthlyStatsChart() {
       </CardHeader>
       <CardContent className="h-[400px] w-full p-2">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+          <BarChart data={monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
@@ -56,9 +56,9 @@ export function MonthlyStatsChart() {
               }}
             />
             <Legend wrapperStyle={{fontSize: "12px"}}/>
-            <Line type="monotone" dataKey="applications" stroke="hsl(var(--primary))" strokeWidth={2} name="Applications" />
-            <Line type="monotone" dataKey="interviews" stroke="hsl(var(--chart-2))" strokeWidth={2} name="Interviews" />
-          </LineChart>
+            <Bar dataKey="applications" fill="hsl(var(--primary))" name="Applications" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="interviews" fill="hsl(var(--chart-2))" name="Interviews" radius={[4, 4, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
