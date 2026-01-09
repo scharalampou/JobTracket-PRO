@@ -8,16 +8,16 @@ type StatusBadgeProps = {
 };
 
 const statusColors: Record<ApplicationStatus, string> = {
-  Applied: 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30',
-  'Screening with Recruiter': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30',
-  '1st Interview': 'bg-teal-500/20 text-teal-300 border-teal-500/30 hover:bg-teal-500/30',
-  '2nd Interview': 'bg-sky-500/20 text-sky-300 border-sky-500/30 hover:bg-sky-500/30',
-  '3rd Interview': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/30',
-  'Task Stage': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30 hover:bg-yellow-500/30',
-  'Final Round': 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30',
-  'Offer Received': 'bg-green-500/20 text-green-300 border-green-500/30 hover:bg-green-500/30',
-  'No Offer': 'bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30',
-  'Rejected CV': 'bg-orange-500/20 text-orange-300 border-orange-500/30 hover:bg-orange-500/30',
+  Applied: 'bg-sky-200/20 text-sky-400 border-sky-300/30 hover:bg-sky-200/30',
+  'Screening with Recruiter': 'bg-cyan-200/20 text-cyan-400 border-cyan-300/30 hover:bg-cyan-200/30',
+  '1st Interview': 'bg-teal-200/20 text-teal-400 border-teal-300/30 hover:bg-teal-200/30',
+  '2nd Interview': 'bg-blue-200/20 text-blue-400 border-blue-300/30 hover:bg-blue-200/30',
+  '3rd Interview': 'bg-indigo-200/20 text-indigo-400 border-indigo-300/30 hover:bg-indigo-200/30',
+  'Task Stage': 'bg-yellow-200/20 text-yellow-400 border-yellow-300/30 hover:bg-yellow-200/30',
+  'Final Round': 'bg-purple-200/20 text-purple-400 border-purple-300/30 hover:bg-purple-200/30',
+  'Offer Received': 'bg-green-200/20 text-green-400 border-green-300/30 hover:bg-green-200/30',
+  'No Offer': 'bg-red-200/20 text-red-400 border-red-300/30 hover:bg-red-200/30',
+  'Rejected CV': 'bg-orange-200/20 text-orange-400 border-orange-300/30 hover:bg-orange-200/30',
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
