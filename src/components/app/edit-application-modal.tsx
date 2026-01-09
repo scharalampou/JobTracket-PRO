@@ -26,25 +26,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState, useEffect } from 'react';
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
-import { Pencil, Wand2, Loader2, CalendarIcon } from 'lucide-react';
+import { Pencil, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { JobApplication } from '@/lib/types';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   company: z.string().min(1, 'Company name is required.'),
   role: z.string().min(1, 'Role is required.'),
   location: z.string().min(1, 'Location is required.'),
-  dateApplied: z.coerce.date({
-    required_error: 'A date is required.',
-  }),
+  dateApplied: z.string().min(1, 'Date applied is required.'),
 });
 
 type EditApplicationModalProps = {
@@ -59,13 +52,6 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      jobDescriptionUrl: application.jobDescriptionUrl || '',
-      company: application.company,
-      role: application.role,
-      location: application.location,
-      dateApplied: new Date(application.dateApplied),
-    },
   });
   
   useEffect(() => {
@@ -75,13 +61,13 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
         company: application.company,
         role: application.role,
         location: application.location,
-        dateApplied: new Date(application.dateApplied),
+        dateApplied: new Date(application.dateApplied).toISOString().split('T')[0],
       });
     }
   }, [open, application, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateApplication(application.id, values);
+    updateApplication(application.id, { ...values, dateApplied: new Date(values.dateApplied) });
     setOpen(false);
     toast({
       title: 'Job Updated',
@@ -229,39 +215,11 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                 control={form.control}
                 name="dateApplied"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Date Applied *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
