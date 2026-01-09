@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'JobTracker Pro',
+  title: 'My Job Tracker',
   description: 'Track your job applications with ease.',
 };
 

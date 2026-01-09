@@ -14,7 +14,7 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Logo />
           <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
-            JobTracker Pro
+            My Job Tracker
           </h1>
         </div>
         <div className="ml-auto flex items-center gap-2">
