@@ -81,9 +81,9 @@ export function ApplicationList() {
           <TableBody>
             {sorted(data).map(app => (
               <TableRow key={app.id}>
-                <TableCell className="font-medium flex items-center gap-2"><Building className="h-4 w-4 text-muted-foreground inline-block"/>{app.company}</TableCell>
+                <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
-                <TableCell>{format(app.dateApplied, 'P')}</TableCell>
+                <TableCell>{format(new Date(app.dateApplied), 'P')}</TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
                   {app.location}
@@ -100,14 +100,14 @@ export function ApplicationList() {
   };
 
   return (
-    <Tabs defaultValue="applied" className="w-full">
+    <Tabs defaultValue="active" className="w-full">
       <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
-        <TabsTrigger value="applied">Applied</TabsTrigger>
         <TabsTrigger value="active">Active</TabsTrigger>
+        <TabsTrigger value="applied">Applied</TabsTrigger>
         <TabsTrigger value="archived">Archived/Rejected</TabsTrigger>
       </TabsList>
-      <TabsContent value="applied">{renderTable(applied)}</TabsContent>
       <TabsContent value="active">{renderTable(active)}</TabsContent>
+      <TabsContent value="applied">{renderTable(applied)}</TabsContent>
       <TabsContent value="archived">{renderTable(archived)}</TabsContent>
     </Tabs>
   );
