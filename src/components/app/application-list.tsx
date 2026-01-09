@@ -17,11 +17,12 @@ export function ApplicationList() {
   const [sortKey, setSortKey] = useState<SortKey>('dateApplied');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  const { active, archived } = useMemo(() => {
+  const { applied, active, archived } = useMemo(() => {
     const archivedStatuses = ['No Offer', 'Ghosted', 'Accepted'];
-    const activeApps = applications.filter(app => !archivedStatuses.includes(app.status));
+    const appliedApps = applications.filter(app => app.status === 'Applied');
+    const activeApps = applications.filter(app => !archivedStatuses.includes(app.status) && app.status !== 'Applied');
     const archivedApps = applications.filter(app => archivedStatuses.includes(app.status));
-    return { active: activeApps, archived: archivedApps };
+    return { applied: appliedApps, active: activeApps, archived: archivedApps };
   }, [applications]);
 
   const handleSort = (key: SortKey) => {
@@ -36,8 +37,11 @@ export function ApplicationList() {
   const sorted = (data: JobApplication[]) => {
     if (!sortKey) return data;
     return [...data].sort((a, b) => {
-      if (a[sortKey] < b[sortKey]) return sortDirection === 'asc' ? -1 : 1;
-      if (a[sortKey] > b[sortKey]) return sortDirection === 'asc' ? 1 : -1;
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
+
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
   };
@@ -77,7 +81,7 @@ export function ApplicationList() {
           <TableBody>
             {sorted(data).map(app => (
               <TableRow key={app.id}>
-                <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
+                <TableCell className="font-medium flex items-center gap-2"><Building className="h-4 w-4 text-muted-foreground inline-block"/>{app.company}</TableCell>
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
                 <TableCell>{format(app.dateApplied, 'P')}</TableCell>
                 <TableCell className="flex items-center gap-2">
@@ -96,11 +100,13 @@ export function ApplicationList() {
   };
 
   return (
-    <Tabs defaultValue="active" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+    <Tabs defaultValue="applied" className="w-full">
+      <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
+        <TabsTrigger value="applied">Applied</TabsTrigger>
         <TabsTrigger value="active">Active</TabsTrigger>
         <TabsTrigger value="archived">Archived/Rejected</TabsTrigger>
       </TabsList>
+      <TabsContent value="applied">{renderTable(applied)}</TabsContent>
       <TabsContent value="active">{renderTable(active)}</TabsContent>
       <TabsContent value="archived">{renderTable(archived)}</TabsContent>
     </Tabs>
