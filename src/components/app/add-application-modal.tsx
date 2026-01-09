@@ -127,12 +127,12 @@ export function AddApplicationModal() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="-ml-1 mr-2 h-5 w-5" />
-          Add Application
+          Add Job
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[475px]">
         <DialogHeader>
-          <DialogTitle className="font-headline">Add New Application</DialogTitle>
+          <DialogTitle className="font-headline">Add New Job</DialogTitle>
           <DialogDescription>
             Enter the details of the job you applied for. Start by scanning a job description URL.
           </DialogDescription>
@@ -246,7 +246,7 @@ export function AddApplicationModal() {
             </div>
 
             <DialogFooter>
-              <Button type="submit">Add Application</Button>
+              <Button type="submit">Add Job</Button>
             </DialogFooter>
           </form>
         </Form>
