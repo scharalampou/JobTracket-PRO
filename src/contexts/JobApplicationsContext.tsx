@@ -56,17 +56,25 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
       status: 'Applied',
       archived: false,
       notes: '',
+      dateApplied: new Date(application.dateApplied), // Keep as Date object for conversion
     };
     
     const collectionRef = collection(firestore, `users/${user.uid}/jobApplications`);
-    addDocumentNonBlocking(collectionRef, newApplication);
+    // The conversion to Timestamp happens inside addDocumentNonBlocking
+    addDocumentNonBlocking(collectionRef, {
+        ...newApplication,
+        dateApplied: Timestamp.fromDate(newApplication.dateApplied),
+    });
 
   }, [firestore, user]);
 
   const updateApplication = useCallback((id: string, data: Partial<UpdatedApplicationData>) => {
     if (!user || !firestore) return;
     const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
-    const updateData = { ...data };
+    const updateData: Partial<UpdatedApplicationData> = { ...data };
+    if (data.dateApplied) {
+        updateData.dateApplied = Timestamp.fromDate(data.dateApplied) as unknown as Date;
+    }
     updateDocumentNonBlocking(docRef, updateData);
   }, [firestore, user]);
 
