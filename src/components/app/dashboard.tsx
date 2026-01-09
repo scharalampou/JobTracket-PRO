@@ -64,12 +64,12 @@ export function Dashboard() {
       </Card>
        <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Jobs Accepted</CardTitle>
+          <CardTitle className="text-sm font-medium">Final Stage</CardTitle>
           <Handshake className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Accepted').length}</div>
-          <p className="text-xs text-muted-foreground">Congratulations!</p>
+          <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Final Round').length}</div>
+          <p className="text-xs text-muted-foreground">Applications in final stages</p>
         </CardContent>
       </Card>
       <Card className="md:col-span-2 lg:col-span-4">
