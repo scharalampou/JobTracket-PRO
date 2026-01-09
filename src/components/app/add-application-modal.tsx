@@ -8,7 +8,15 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Form,
   FormControl,
@@ -22,19 +30,28 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Plus, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
-const formSchema = z.object({
-  jobDescriptionUrl: z.string().url('Please enter a valid URL').or(z.literal('')),
-  company: z.string().min(1, 'Company name is required'),
-  role: z.string().min(1, 'Role is required'),
-  location: z.string().min(1, 'Location is required'),
-});
+const currentYear = new Date().getFullYear();
+const months = Array.from({ length: 12 }, (_, i) => ({
+  value: i + 1,
+  label: new Date(0, i).toLocaleString('default', { month: 'long' }),
+}));
+const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
+const formSchema = z.object({
+  jobDescriptionUrl: z.string().url('Please enter a valid URL.').or(z.literal('')),
+  company: z.string().min(1, 'Company name is required.'),
+  role: z.string().min(1, 'Role is required.'),
+  location: z.string().min(1, 'Location is required.'),
+  day: z.string().min(1, 'Day is required.'),
+  month: z.string().min(1, 'Month is required.'),
+  year: z.string().min(1, 'Year is required.'),
+});
 
 export function AddApplicationModal() {
   const [open, setOpen] = useState(false);
@@ -49,17 +66,38 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
+      day: String(new Date().getDate()),
+      month: String(new Date().getMonth() + 1),
+      year: String(new Date().getFullYear()),
     },
   });
 
+  const selectedMonth = form.watch('month');
+  const selectedYear = form.watch('year');
+
+  const daysInMonth = useMemo(() => {
+    const yearNum = parseInt(selectedYear, 10);
+    const monthNum = parseInt(selectedMonth, 10);
+    if (!isNaN(yearNum) && !isNaN(monthNum)) {
+      return new Date(yearNum, monthNum, 0).getDate();
+    }
+    return 31; // Default to 31 if month/year not set
+  }, [selectedMonth, selectedYear]);
+
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    addApplication(values);
+    const { day, month, year, ...rest } = values;
+    const dateApplied = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    
+    addApplication({ ...rest, dateApplied });
     form.reset();
     setOpen(false);
     toast({
       title: 'Job Added',
       description: `${values.role} at ${values.company} has been added.`,
-    })
+    });
   };
 
   const handleScanUrl = async () => {
@@ -73,7 +111,7 @@ export function AddApplicationModal() {
     setIsScanning(false);
 
     if (result.error) {
-       toast({
+      toast({
         variant: 'destructive',
         title: 'Scan Failed',
         description: result.error,
@@ -88,11 +126,11 @@ export function AddApplicationModal() {
     }
     if (result.role) {
       form.setValue('role', result.role, { shouldValidate: true });
-       fieldsUpdated.push('Role');
+      fieldsUpdated.push('Role');
     }
     if (result.location) {
       form.setValue('location', result.location, { shouldValidate: true });
-       fieldsUpdated.push('Location');
+      fieldsUpdated.push('Location');
     }
 
     if (fieldsUpdated.length > 0) {
@@ -101,7 +139,7 @@ export function AddApplicationModal() {
         description: `Autofilled the following fields: ${fieldsUpdated.join(', ')}.`,
       });
     } else {
-       toast({
+      toast({
         variant: 'destructive',
         title: 'Scan Complete',
         description: 'Could not find any details to autofill.',
@@ -121,12 +159,12 @@ export function AddApplicationModal() {
         <DialogHeader>
           <DialogTitle className="font-headline">Add New Job</DialogTitle>
           <DialogDescription>
-            Enter the details of the job you applied for. Start by scanning a job description URL.
+            Enter the details of the job you applied for. You can autofill by scanning a URL.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-             <FormField
+            <FormField
               control={form.control}
               name="jobDescriptionUrl"
               render={({ field }) => (
@@ -188,8 +226,80 @@ export function AddApplicationModal() {
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-3 gap-4">
+               <FormField
+                control={form.control}
+                name="month"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date Applied</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {months.map(m => (
+                          <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="day"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-background'>.</FormLabel>
+                     <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Day" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {days.map(d => (
+                          <SelectItem key={d} value={String(d)}>{d}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-background'>.</FormLabel>
+                     <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {years.map(y => (
+                          <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             
             <DialogFooter>
+               <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+              </DialogClose>
               <Button type="submit">Add Job</Button>
             </DialogFooter>
           </form>
