@@ -104,7 +104,7 @@ export function ApplicationList() {
       <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
         <TabsTrigger value="active">Active</TabsTrigger>
         <TabsTrigger value="applied">Applied</TabsTrigger>
-        <TabsTrigger value="archived">Archived/Rejected</TabsTrigger>
+        <TabsTrigger value="archived">Archived</TabsTrigger>
       </TabsList>
       <TabsContent value="active">{renderTable(active)}</TabsContent>
       <TabsContent value="applied">{renderTable(applied)}</TabsContent>
