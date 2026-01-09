@@ -24,15 +24,15 @@ export function SuccessRateChart() {
     ];
 
     const totalApplications = applications.length;
+    if (totalApplications === 0) {
+      return [];
+    }
+    
     const totalInterviews = applications.filter(app => interviewStages.includes(app.status)).length;
     const applicationsWithoutInterview = totalApplications - totalInterviews;
 
-    if (totalApplications === 0) {
-        return [];
-    }
-
     return [
-      { name: 'Applications', value: applicationsWithoutInterview },
+      { name: 'Applied (No Interview)', value: applicationsWithoutInterview },
       { name: 'Interviews', value: totalInterviews },
     ];
   }, [applications]);
@@ -78,6 +78,7 @@ export function SuccessRateChart() {
               fill="#8884d8"
               dataKey="value"
               label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+                if (value === 0) return null; // Don't render label for segments with 0 value
                 const RADIAN = Math.PI / 180;
                 const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
                 const x = cx + radius * Math.cos(-midAngle * RADIAN);
