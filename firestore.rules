@@ -1,130 +1,113 @@
 /**
- * Core Philosophy: This ruleset enforces a strict user-ownership model. All user-generated
- * content, specifically user profiles and job applications, is stored in a data tree scoped
- * by the user's unique ID. This ensures that users can only ever access their own data,
- * providing strong data privacy and isolation by default.
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model. All user data is stored
+ * in subcollections under a document path unique to that user's ID. This ensures
+ * that users can only ever access their own data, providing strong security and
+ * data isolation by default.
  *
- * Data Structure: All data is organized under the top-level `/users` collection. Each user's
- * profile and their associated job applications are nested under their unique document path:
- * - /users/{userId} - Contains the user's profile information.
- * - /users/{userId}/jobApplications/{jobApplicationId} - Contains the user's job applications.
+ * Data Structure:
+ * All data is organized hierarchically under the `/users/{userId}` path. For
+ * example, a user's job applications are stored at:
+ * /users/{userId}/jobApplications/{jobApplicationId}.
+ * This path-based security model is simple, performant, and easy to maintain.
  *
  * Key Security Decisions:
- * - Default Deny: All paths are closed by default. Access is granted explicitly.
- * - Strict Ownership: All operations (read, write, delete) are restricted to the
- *   authenticated owner of the data, identified by the `{userId}` wildcard in the path.
- * - No User Listing: Listing the top-level `/users` collection is disallowed to protect
- *   user privacy and prevent enumeration of the user base.
- * - Path and Data Consistency: Rules enforce that the `userId` stored within a
- *   `JobApplication` document must match the `userId` in the document's path. This
- *   maintains relational integrity and prevents data from being mis-assigned.
+ * - Default Deny: Access is implicitly denied for any path not explicitly defined.
+ * - Signed-In Users Only: All operations require a user to be authenticated.
+ * - Strict Ownership: Users can only read, write, or query their own data.
+ *   There is no concept of shared or public data in this model.
+ * - No User Listing: It is not possible to list documents in the top-level
+ *   /users collection, preventing enumeration of all application users.
  *
- * Denormalization for Authorization: The data model is inherently designed for simple and
- * performant rules. By nesting `jobApplications` under a specific user's path, authorization
- * checks are based on the path itself and do not require expensive `get()` calls to other
- * documents to verify ownership.
+ * Denormalization for Authorization:
+ * The security model relies on path-based authorization, where the user's UID
+ * is part of the document path. This is the most efficient method as it does
+ * not require reading other documents (using `get()` or `exists()`) to make an
+ * authorization decision.
  *
- * Structural Segregation: The data structure naturally segregates each user's private data,
- * making list operations on subcollections like `jobApplications` secure and efficient. A user's
- * query for their own applications is automatically scoped by the path, and the rules
- * simply need to verify that the requesting user is the owner of that path.
+ * Structural Segregation:
+ * The data is naturally segregated by user, which aligns perfectly with
+ * Firestore's querying capabilities. This prevents data leakage and ensures
+ * that list operations are always scoped to the currently authenticated user's
+ * own data.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // =================================
+    //-------------------------------------------------------------------------
     // Helper Functions
-    // =================================
+    //-------------------------------------------------------------------------
 
     /**
-     * Checks if a user is authenticated.
+     * Returns true if the user is authenticated.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * Checks if the currently authenticated user is the owner of the resource.
-     * Compares the request's auth UID with a given userId from the path.
+     * Returns true if the requesting user's UID matches the provided userId.
+     * This is the core of the ownership model.
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
     /**
-     * Checks if the currently authenticated user is the owner of an EXISTING resource.
-     * Crucial for safe update and delete operations.
+     * Returns true if the document exists and the user is the owner.
+     * Used for safe update and delete operations.
      */
     function isExistingOwner(userId) {
       return isOwner(userId) && resource != null;
     }
 
     /**
-     * Validates required relational fields for a new User document.
-     * Ensures the document's internal `id` matches the document's path `userId`.
+     * Validates required data integrity for a new JobApplication.
+     * In prototyping mode, we only validate fields critical for establishing
+     * relationships, not the entire data shape.
      */
-    function isValidUserCreate(userId) {
-      return request.resource.data.id == userId;
+    function hasValidJobApplicationDataOnCreate(jobApplicationId) {
+      let data = request.resource.data;
+      // Enforces that the document's internal ID matches its path ID.
+      return data.id == jobApplicationId;
     }
 
     /**
-     * Validates that critical relational fields for a User document are immutable.
-     * Prevents the ownership link (`id`) from being changed after creation.
+     * Enforces immutability for critical relational fields on update.
+     * Prevents the ownership link or primary identifier from being changed.
      */
-    function isValidUserUpdate() {
+    function hasImmutableJobApplicationData() {
+      // The internal 'id' field cannot be changed after creation.
       return request.resource.data.id == resource.data.id;
     }
 
-    /**
-     * Validates required relational fields for a new JobApplication document.
-     * Ensures the document's internal `userId` matches the owner's `userId` from the path.
-     */
-    function isValidJobApplicationCreate(userId) {
-      return request.resource.data.userId == userId;
-    }
 
-    /**
-     * Validates that critical relational fields for a JobApplication are immutable.
-     * Prevents the ownership link (`userId`) from being changed after creation.
-     */
-    function isValidJobApplicationUpdate() {
-      return request.resource.data.userId == resource.data.userId;
-    }
-
-    // =================================
+    //-------------------------------------------------------------------------
     // Collection Rules
-    // =================================
+    //-------------------------------------------------------------------------
 
     /**
-     * @description Controls access to a user's own profile document.
-     * @path /users/{userId}
-     * @allow (get) An authenticated user reads their own profile: `auth.uid == 'user123'`, `get /users/user123`
-     * @deny (get) An authenticated user tries to read another user's profile: `auth.uid == 'user123'`, `get /users/user456`
-     * @deny (list) No user can list all user profiles in the database.
-     * @principle Restricts access to a user's own data tree.
-     */
-    match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId) && isValidUserCreate(userId);
-      allow update: if isExistingOwner(userId) && isValidUserUpdate();
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Controls access to a user's job applications.
-     * @path /users/{userId}/jobApplications/{jobApplicationId}
-     * @allow (create) An authenticated user adds a new job application: `auth.uid == 'user123'`, `create /users/user123/jobApplications/appABC`
-     * @allow (list) An authenticated user lists their own applications: `auth.uid == 'user123'`, `list /users/user123/jobApplications`
-     * @deny (update) An authenticated user tries to modify another user's application: `auth.uid == 'user123'`, `update /users/user456/jobApplications/appXYZ`
-     * @principle Enforces document ownership and validates relational integrity.
+     * @description
+     *   Secures a user's collection of job applications. Only the owner of the
+     *   data tree can read, write, or delete their own applications.
+     * @path
+     *   /users/{userId}/jobApplications/{jobApplicationId}
+     * @allow
+     *   (create) An authenticated user creating a job application in their own subcollection.
+     *   `auth.uid = 'user123'`, `create /users/user123/jobApplications/app456`
+     * @deny
+     *   (get) A user attempting to read another user's job application.
+     *   `auth.uid = 'userABC'`, `get /users/user123/jobApplications/app456`
+     * @principle
+     *   Restricts access to a user's own data tree. Enforces that a user can only
+     *   operate within the `/users/{their-own-uid}` path.
      */
     match /users/{userId}/jobApplications/{jobApplicationId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && isValidJobApplicationCreate(userId);
-      allow update: if isExistingOwner(userId) && isValidJobApplicationUpdate();
+      allow create: if isOwner(userId) && hasValidJobApplicationDataOnCreate(jobApplicationId);
+      allow update: if isExistingOwner(userId) && hasImmutableJobApplicationData();
       allow delete: if isExistingOwner(userId);
     }
   }
