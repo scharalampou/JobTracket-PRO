@@ -75,12 +75,17 @@ export function ApplicationList() {
 
   const sorted = (data: JobApplication[]) => {
     if (!sortKey) return data;
-    return [...data].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
 
-      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return [...data].sort((a, b) => {
+      const aValue = a[sortKey];
+      const bValue = b[sortKey];
+
+      if (aValue < bValue) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
       return 0;
     });
   };
@@ -88,7 +93,7 @@ export function ApplicationList() {
   const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: React.ReactNode }) => (
     <div
       onClick={() => handleSort(key)}
-      className="flex items-center cursor-pointer hover:text-foreground transition-colors"
+      className="flex items-center cursor-pointer text-[#EEFAFC] hover:text-white transition-colors"
     >
       {children}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -113,7 +118,7 @@ export function ApplicationList() {
               <TableHead className="w-[150px] text-base font-bold">
                 <SortableHeader sortKey="dateApplied">Date</SortableHeader>
               </TableHead>
-              <TableHead className="w-[200px] text-base font-bold">Location</TableHead>
+              <TableHead className="w-[200px] text-base font-bold text-[#EEFAFC]">Location</TableHead>
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
