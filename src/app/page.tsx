@@ -3,7 +3,7 @@
 import { AddApplicationModal } from '@/components/app/add-application-modal';
 import { ApplicationList } from '@/components/app/application-list';
 import { Dashboard } from '@/components/app/dashboard';
-import { LocationChart } from '@/components/app/location-chart';
+import { MonthlyStatsChart } from '@/components/app/monthly-stats-chart';
 import { Logo } from '@/components/app/logo';
 import { ThemeToggle } from '@/components/app/theme-toggle';
 
@@ -24,8 +24,10 @@ export default function Home() {
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
         <Dashboard />
-        <ApplicationList />
-        <LocationChart />
+        <div className="grid gap-4 md:grid-cols-2">
+          <ApplicationList />
+          <MonthlyStatsChart />
+        </div>
       </main>
     </div>
   );

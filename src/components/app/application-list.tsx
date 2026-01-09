@@ -13,6 +13,7 @@ import { APPLICATION_STATUSES } from '@/lib/types';
 import type { ApplicationStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { ScrollArea } from '../ui/scroll-area';
 
 type SortKey = keyof JobApplication | '';
 
@@ -149,8 +150,9 @@ export function ApplicationList() {
   };
 
   return (
+    <ScrollArea className="h-[450px]">
     <Tabs defaultValue="active" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
+      <TabsList className="grid w-full grid-cols-3 md:w-full">
         <TabsTrigger value="active">Active</TabsTrigger>
         <TabsTrigger value="applied">Applied</TabsTrigger>
         <TabsTrigger value="archived">Archived</TabsTrigger>
@@ -159,5 +161,6 @@ export function ApplicationList() {
       <TabsContent value="applied">{renderTable(applied)}</TabsContent>
       <TabsContent value="archived">{renderTable(archived)}</TabsContent>
     </Tabs>
+    </ScrollArea>
   );
 }
