@@ -15,7 +15,7 @@ interface FirebaseAuthToken {
   phone_number: string | null;
   sub: string;
   firebase: {
-    identities: Record<string, string[]>;
+    identities: Record<string, any>; // Changed from string[] to any to handle various provider data
     sign_in_provider: string;
     tenant: string | null;
   };
@@ -45,6 +45,20 @@ function buildAuthObject(currentUser: User | null): FirebaseAuthObject | null {
     return null;
   }
 
+  const identities: Record<string, any> = {};
+    if (currentUser.providerData) {
+        currentUser.providerData.forEach(profile => {
+            if (profile.providerId) {
+                identities[profile.providerId] = profile.uid;
+            }
+        });
+    }
+    // For email/password, the identities map might be just the email
+    if (currentUser.email) {
+        identities['email'] = currentUser.email;
+    }
+
+
   const token: FirebaseAuthToken = {
     name: currentUser.displayName,
     email: currentUser.email,
@@ -52,13 +66,8 @@ function buildAuthObject(currentUser: User | null): FirebaseAuthObject | null {
     phone_number: currentUser.phoneNumber,
     sub: currentUser.uid,
     firebase: {
-      identities: currentUser.providerData.reduce((acc, p) => {
-        if (p.providerId) {
-          acc[p.providerId] = [p.uid];
-        }
-        return acc;
-      }, {} as Record<string, string[]>),
-      sign_in_provider: currentUser.providerData[0]?.providerId || 'custom',
+      identities: identities,
+      sign_in_provider: currentUser.providerData[0]?.providerId || 'password', // Default to password
       tenant: currentUser.tenantId,
     },
   };
@@ -118,7 +127,7 @@ export class FirestorePermissionError extends Error {
   constructor(context: SecurityRuleContext) {
     const requestObject = buildRequestObject(context);
     super(buildErrorMessage(requestObject));
-    this.name = 'FirebaseError';
+    this.name = 'FirebaseError'; // To be caught as a FirebaseError
     this.request = requestObject;
   }
 }
