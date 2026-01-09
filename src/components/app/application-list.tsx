@@ -8,7 +8,6 @@ import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
 import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
 import type { ApplicationStatus } from '@/lib/types';
@@ -53,7 +52,7 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
 
 export function ApplicationList() {
   const { applications } = useJobApplications();
-  const [sortKey, setSortKey] = useState<SortKey>('dateApplied');
+  const [sortKey, setSortKey] = useState<SortKey>('company');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const { applied, active, archived } = useMemo(() => {
@@ -115,9 +114,6 @@ export function ApplicationList() {
               <TableHead className="text-base font-bold">
                 <SortableHeader sortKey="role">Role</SortableHeader>
               </TableHead>
-              <TableHead className="w-[150px] text-base font-bold">
-                <SortableHeader sortKey="dateApplied">Date</SortableHeader>
-              </TableHead>
               <TableHead className="w-[200px] text-base font-bold text-muted-foreground">Location</TableHead>
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
@@ -129,7 +125,6 @@ export function ApplicationList() {
               <TableRow key={app.id}>
                 <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
-                <TableCell>{format(new Date(app.dateApplied), 'P')}</TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
                   {app.location}

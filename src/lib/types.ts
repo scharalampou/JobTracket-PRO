@@ -18,7 +18,6 @@ export type JobApplication = {
   company: string;
   role: string;
   jobDescriptionUrl: string;
-  dateApplied: Date;
   location: string;
   status: ApplicationStatus;
 };
