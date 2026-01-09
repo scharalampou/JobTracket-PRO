@@ -29,7 +29,7 @@ import { Pencil, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { JobApplication } from '@/lib/types';
-import { Tooltip, TooltipProvider, TooltipContent } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
@@ -220,6 +220,10 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                             value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
                             onChange={(e) => {
                                 const date = new Date(e.target.value);
+
+                                // This handles the timezone offset when a user picks a date.
+                                // The browser will set the time to midnight in the user's local timezone.
+                                // We need to adjust it to UTC midnight to store it correctly.
                                 const userTimezoneOffset = date.getTimezoneOffset() * 60000;
                                 field.onChange(new Date(date.getTime() + userTimezoneOffset));
                             }}
