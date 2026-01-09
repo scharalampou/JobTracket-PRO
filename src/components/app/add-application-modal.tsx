@@ -59,7 +59,13 @@ export function AddApplicationModal() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     addApplication(values);
-    form.reset();
+    form.reset({
+      jobDescriptionUrl: '',
+      company: '',
+      role: '',
+      location: '',
+      dateApplied: new Date(),
+    });
     setOpen(false);
     toast({
       title: 'Application Added',
@@ -117,7 +123,7 @@ export function AddApplicationModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-brand hover:bg-brand/90 text-white">
           <Plus className="-ml-1 mr-2 h-5 w-5" />
           Add Application
         </Button>
