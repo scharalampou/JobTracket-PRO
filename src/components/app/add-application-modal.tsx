@@ -29,13 +29,13 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { scanJobUrlForLocation } from '@/app/actions';
+import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
+  jobDescriptionUrl: z.string().url('Please enter a valid URL'),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Role is required'),
-  jobDescriptionUrl: z.string().url('Please enter a valid URL'),
   dateApplied: z.date({ required_error: 'Application date is required' }),
   location: z.string().min(1, 'Location is required'),
 });
@@ -49,9 +49,9 @@ export function AddApplicationModal() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      jobDescriptionUrl: '',
       company: '',
       role: '',
-      jobDescriptionUrl: '',
       location: '',
     },
   });
@@ -73,19 +73,42 @@ export function AddApplicationModal() {
       return;
     }
     setIsScanning(true);
-    const result = await scanJobUrlForLocation(url);
+    const result = await scanJobUrlForDetails(url);
     setIsScanning(false);
-    if (result.location) {
-      form.setValue('location', result.location, { shouldValidate: true });
+
+    if (result.error) {
        toast({
-        title: 'Location Found!',
-        description: `Set location to "${result.location}".`,
-      });
-    } else {
-      toast({
         variant: 'destructive',
         title: 'Scan Failed',
-        description: result.error || 'Could not find location.',
+        description: result.error,
+      });
+      return;
+    }
+
+    let fieldsUpdated: string[] = [];
+    if (result.company) {
+      form.setValue('company', result.company, { shouldValidate: true });
+      fieldsUpdated.push('Company');
+    }
+    if (result.role) {
+      form.setValue('role', result.role, { shouldValidate: true });
+       fieldsUpdated.push('Role');
+    }
+    if (result.location) {
+      form.setValue('location', result.location, { shouldValidate: true });
+       fieldsUpdated.push('Location');
+    }
+
+    if (fieldsUpdated.length > 0) {
+      toast({
+        title: 'Details Found!',
+        description: `Autofilled the following fields: ${fieldsUpdated.join(', ')}.`,
+      });
+    } else {
+       toast({
+        variant: 'destructive',
+        title: 'Scan Complete',
+        description: 'Could not find any details to autofill.',
       });
     }
   };
@@ -102,11 +125,31 @@ export function AddApplicationModal() {
         <DialogHeader>
           <DialogTitle className="font-headline">Add New Application</DialogTitle>
           <DialogDescription>
-            Enter the details of the job you applied for.
+            Enter the details of the job you applied for. Start by scanning a job description URL.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+             <FormField
+              control={form.control}
+              name="jobDescriptionUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Description URL</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input type="url" placeholder="https://..." {...field} />
+                    </FormControl>
+                    <Button type="button" variant="outline" size="icon" onClick={handleScanUrl} disabled={isScanning}>
+                      {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
+                      <span className="sr-only">Scan URL</span>
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -135,26 +178,6 @@ export function AddApplicationModal() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="jobDescriptionUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Description URL</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <FormControl>
-                      <Input type="url" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <Button type="button" variant="outline" size="icon" onClick={handleScanUrl} disabled={isScanning}>
-                      {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
-                      <span className="sr-only">Scan URL</span>
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField
