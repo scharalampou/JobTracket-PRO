@@ -1,9 +1,10 @@
+
 'use client';
 
 import { AddApplicationModal } from '@/components/app/add-application-modal';
 import { ApplicationList } from '@/components/app/application-list';
 import { Dashboard } from '@/components/app/dashboard';
-import { MonthlyStatsChart } from '@/components/app/monthly-stats-chart';
+import { SuccessRateChart } from '@/components/app/success-rate-chart';
 import { Logo } from '@/components/app/logo';
 import { ThemeToggle } from '@/components/app/theme-toggle';
 import { UserProfile } from '@/components/auth/UserProfile';
@@ -68,10 +69,9 @@ export default function Home({ params, searchParams }: { params: {}; searchParam
         <ApplicationList />
       </div>
       <Separator />
-      <div className="grid gap-4">
-        <h2 className="text-2xl font-bold tracking-tight">Statistics</h2>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Dashboard />
-        <MonthlyStatsChart />
+        <SuccessRateChart />
       </div>
     </main>
   );
