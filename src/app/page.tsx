@@ -16,72 +16,66 @@ import { LogIn } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 
-function AuthRedirectHandler({ onRedirectHandled }: { onRedirectHandled: () => void }) {
-  const { auth, firestore } = useFirebase();
-
-  useEffect(() => {
-    const handleRedirect = async () => {
-      try {
-        await getRedirectResult(auth, firestore);
-      } catch (error) {
-        console.error("Error handling redirect result:", error);
-      } finally {
-        // This function will be called regardless of success or failure.
-        onRedirectHandled();
-      }
-    };
-    handleRedirect();
-  }, [auth, firestore, onRedirectHandled]);
-
+function LoadingScreen({ message }: { message: string }) {
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <p>Signing in...</p>
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+        <div className="flex items-center gap-2">
+          <Logo />
+          <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
+            JobTracker
+          </h1>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <UserProfile />
+          <ThemeToggle />
+        </div>
+      </header>
+      <div className="flex flex-1 items-center justify-center">
+        <p>{message}</p>
+      </div>
     </div>
   );
 }
 
+
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const { auth, firestore } = useFirebase();
-  const [isHandlingRedirect, setIsHandlingRedirect] = useState(true);
+  // isCheckingRedirect will be true on initial mount until we've processed any potential redirect.
+  const [isCheckingRedirect, setIsCheckingRedirect] = useState(true);
 
-  // This effect checks if the page loaded because of a sign-in redirect.
-  // We start in a "handling redirect" state.
-  // The AuthRedirectHandler will run, process the result, and then call `onRedirectHandled`.
-  // If there was no redirect, `getRedirectResult` resolves to null quickly.
-  // If there was a redirect, it might take a moment to process.
-  // Once `onRedirectHandled` is called, we know it's safe to check the `user` state.
+
+  useEffect(() => {
+    // This effect runs once on mount to handle any pending sign-in redirects.
+    const handleRedirect = async () => {
+      try {
+        await getRedirectResult(auth, firestore);
+      } catch (error) {
+        // This can happen if the user is not coming from a redirect (e.g. auth/no-auth-event)
+        // We can safely ignore those, but log others.
+         if ((error as any).code !== 'auth/no-auth-event') {
+            console.error("Error handling redirect result:", error);
+         }
+      } finally {
+        // Once we've checked, we can stop showing the "Signing in..." message.
+        // The onAuthStateChanged listener will then correctly report the user status.
+        setIsCheckingRedirect(false);
+      }
+    };
+    handleRedirect();
+  }, [auth, firestore]);
+
+
+  // Show a loading screen while checking for a redirect or while the user state is initially loading.
+  if (isCheckingRedirect || isUserLoading) {
+    const message = isCheckingRedirect ? "Finalizing sign in..." : "Loading user...";
+    return <LoadingScreen message={message} />;
+  }
 
   const handleSignIn = () => {
-    // Before redirecting, set the state to indicate we expect a redirect.
     signInWithGoogle(auth, firestore);
   };
-
-  if (isHandlingRedirect || isUserLoading) {
-     return (
-       <div className="flex min-h-screen w-full flex-col bg-background">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-            <div className="flex items-center gap-2">
-              <Logo />
-              <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
-                JobTracker
-              </h1>
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              <UserProfile />
-              <ThemeToggle />
-            </div>
-          </header>
-          {isHandlingRedirect ? (
-             <AuthRedirectHandler onRedirectHandled={() => setIsHandlingRedirect(false)} />
-          ): (
-            <div className="flex flex-1 items-center justify-center">
-              <p>Loading...</p>
-            </div>
-          )}
-       </div>
-     )
-  }
 
 
   const renderUnauthenticatedView = () => (
