@@ -209,7 +209,7 @@ export function ApplicationList() {
   };
 
   return (
-    <ScrollArea className="h-[450px]">
+    <ScrollArea>
     <Tabs defaultValue="active" className="w-full">
       <TabsList className="grid w-full grid-cols-3 md:w-full">
         <TabsTrigger value="active">Active</TabsTrigger>
