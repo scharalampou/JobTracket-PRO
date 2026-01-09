@@ -35,24 +35,24 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 205 100% 7%;
-    --foreground: 0 0% 100%;
+    --background: 205 100% 7%; /* Ink Black */
+    --foreground: 0 0% 100%; /* White */
     --card: 205 100% 9%;
     --card-foreground: 0 0% 100%;
     --popover: 205 100% 7%;
     --popover-foreground: 0 0% 100%;
-    --primary: 190 65% 23%;
+    --primary: 190 65% 35%; /* Stormy Teal */
     --primary-foreground: 37 100% 91%;
     --secondary: 205 100% 12%;
     --secondary-foreground: 0 0% 100%;
     --muted: 205 100% 12%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 37 100% 91%;
-    --accent-foreground: 205 100% 7%;
+    --accent: 37 100% 91%; /* Papaya Whip */
+    --accent-foreground: 205 100% 7%; /* Ink Black */
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 190 65% 18%;
-    --input: 190 65% 18%;
+    --border: 190 65% 25%;
+    --input: 190 65% 25%;
     --ring: 37 100% 91%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
