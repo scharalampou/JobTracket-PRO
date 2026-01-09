@@ -26,6 +26,7 @@ function AuthRedirectHandler({ onRedirectHandled }: { onRedirectHandled: () => v
       } catch (error) {
         console.error("Error handling redirect result:", error);
       } finally {
+        // This function will be called regardless of success or failure.
         onRedirectHandled();
       }
     };
@@ -43,6 +44,34 @@ export default function Home() {
   const { user, isUserLoading } = useUser();
   const { auth, firestore } = useFirebase();
   const [isHandlingRedirect, setIsHandlingRedirect] = useState(true);
+
+  // This effect will run on the first render to check for a redirect result.
+  useEffect(() => {
+    const checkRedirect = async () => {
+      try {
+        // We attempt to get the redirect result. If there's no redirect, it resolves to null.
+        const result = await firebaseGetRedirectResult(auth);
+        // If there was no redirect operation in progress, we can stop "handling" it.
+        // If there was, the onAuthStateChanged listener will handle the user state update.
+        // We just need to give it a moment.
+      } catch (error) {
+        // This might happen if the user closes the sign-in popup or other errors.
+        console.error("Redirect check failed:", error);
+      } finally {
+        setIsHandlingRedirect(false);
+      }
+    };
+
+    // We only need to run this check once.
+    checkRedirect();
+  }, [auth]);
+
+
+  const handleSignIn = () => {
+    // Before redirecting, set the state to indicate we expect a redirect.
+    setIsHandlingRedirect(true);
+    signInWithGoogle(auth, firestore);
+  };
 
 
   const renderUnauthenticatedView = () => (
@@ -92,16 +121,12 @@ export default function Home() {
         </div>
       </header>
       
-      {isHandlingRedirect ? (
-        <AuthRedirectHandler onRedirectHandled={() => setIsHandlingRedirect(false)} />
-      ) : (
-        shouldRenderContent ? (
-          user ? renderAuthenticatedView() : renderUnauthenticatedView()
-        ) : (
-          <div className="flex flex-1 items-center justify-center">
+      {isHandlingRedirect || isUserLoading ? (
+         <div className="flex flex-1 items-center justify-center">
             <p>Loading...</p>
           </div>
-        )
+      ) : (
+          user ? renderAuthenticatedView() : renderUnauthenticatedView()
       )}
     </div>
   );

@@ -16,14 +16,13 @@ import { FirestorePermissionError } from '@/firebase/errors';
  * Initiates the Google Sign-In flow using a redirect.
  * @param auth - The Firebase Auth instance.
  */
-export async function signInWithGoogle(auth: Auth) {
+export function signInWithGoogle(auth: Auth, firestore: Firestore) {
   const provider = new GoogleAuthProvider();
-  try {
-    // No firestore instance needed here, it's for handling the result.
-    await signInWithRedirect(auth, provider);
-  } catch (error) {
+  // It's better to call signInWithRedirect and not await it,
+  // as it navigates away from the current page.
+  signInWithRedirect(auth, provider).catch((error) => {
     console.error("Error starting Google sign-in redirect:", error);
-  }
+  });
 }
 
 /**
@@ -46,8 +45,9 @@ export async function getRedirectResult(auth: Auth, firestore: Firestore) {
         photoURL: user.photoURL,
       };
       
-      // Use non-blocking write
+      // Use non-blocking write, but catch potential permission errors
       setDoc(userRef, userData, { merge: true }).catch(error => {
+          // This will be caught by the global error handler
           errorEmitter.emit(
               'permission-error',
               new FirestorePermissionError({
@@ -58,12 +58,15 @@ export async function getRedirectResult(auth: Auth, firestore: Firestore) {
           );
       });
     }
+     return result; // Return the result
   } catch (error: any) {
     // This can happen if the user is not coming from a redirect.
-    // We can safely ignore these errors.
+    // We can safely ignore these errors as they are not "real" errors.
     if (error.code !== 'auth/no-auth-event') {
         console.error("Error getting redirect result:", error);
     }
+    // Re-throw other errors so the caller can handle them if needed.
+    throw error;
   }
 }
 
