@@ -41,7 +41,7 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
       <DropdownMenuContent align="start">
         {APPLICATION_STATUSES.map(status => (
           <DropdownMenuItem key={status} onSelect={() => handleStatusChange(status)}>
-            <StatusBadge status={status} className="border-transparent py-1 px-1.5"/>
+            <StatusBadge status={status} className="py-1 px-1.5"/>
             <span className="ml-2">{status}</span>
           </DropdownMenuItem>
         ))}
@@ -104,17 +104,17 @@ export function ApplicationList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">
+              <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="company">Company</SortableHeader>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-base font-bold">
                 <SortableHeader sortKey="role">Role</SortableHeader>
               </TableHead>
-              <TableHead className="w-[150px]">
+              <TableHead className="w-[150px] text-base font-bold">
                 <SortableHeader sortKey="dateApplied">Date Applied</SortableHeader>
               </TableHead>
-              <TableHead className="w-[200px]">Location</TableHead>
-              <TableHead className="w-[200px]">
+              <TableHead className="w-[200px] text-base font-bold">Location</TableHead>
+              <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
             </TableRow>
