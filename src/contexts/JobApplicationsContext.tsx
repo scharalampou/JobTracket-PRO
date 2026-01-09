@@ -21,7 +21,7 @@ interface JobApplicationsContextType {
   addApplication: (application: NewApplicationData) => void;
   updateApplicationStatus: (id: string, status: ApplicationStatus) => void;
   archiveApplication: (id: string, notes?: string) => void;
-  updateApplication: (id: string, data: UpdatedApplicationData) => void;
+  updateApplication: (id: string, data: Partial<UpdatedApplicationData>) => void;
 }
 
 const JobApplicationsContext = createContext<JobApplicationsContextType | undefined>(undefined);
@@ -61,7 +61,7 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
 
   }, [firestore, user]);
 
-  const updateApplication = useCallback((id: string, data: UpdatedApplicationData) => {
+  const updateApplication = useCallback((id: string, data: Partial<UpdatedApplicationData>) => {
     if (!user || !firestore) return;
     const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
     updateDocumentNonBlocking(docRef, data);
