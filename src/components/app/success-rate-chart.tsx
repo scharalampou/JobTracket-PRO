@@ -42,7 +42,7 @@ export function SuccessRateChart() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Success Rate</CardTitle>
+                <CardTitle>Statistics</CardTitle>
             </CardHeader>
             <CardContent className="h-[400px] w-full flex items-center justify-center">
                 <p className="text-muted-foreground">No application data to display.</p>
@@ -54,7 +54,7 @@ export function SuccessRateChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Success Rate</CardTitle>
+        <CardTitle>Statistics</CardTitle>
       </CardHeader>
       <CardContent className="h-[400px] w-full p-2">
         <ResponsiveContainer width="100%" height="100%">
@@ -107,3 +107,4 @@ export function SuccessRateChart() {
     </Card>
   );
 }
+
