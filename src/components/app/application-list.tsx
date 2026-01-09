@@ -8,6 +8,7 @@ import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
 import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
 type SortKey = keyof JobApplication | '';
 
@@ -78,7 +79,7 @@ export function ApplicationList() {
               <TableRow key={app.id}>
                 <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
-                <TableCell>{app.dateApplied.toLocaleDateString()}</TableCell>
+                <TableCell>{format(app.dateApplied, 'P')}</TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
                   {app.location}
