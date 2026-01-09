@@ -76,8 +76,8 @@ export function ApplicationList() {
           <TableBody>
             {sorted(data).map(app => (
               <TableRow key={app.id}>
-                <TableCell className="font-medium flex items-center gap-2"><Building className="h-4 w-4 text-muted-foreground"/>{app.company}</TableCell>
-                <TableCell className="flex items-center gap-2"><RoleIcon className="h-4 w-4 text-muted-foreground"/>{app.role}</TableCell>
+                <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
+                <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
                 <TableCell>{app.dateApplied.toLocaleDateString()}</TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
