@@ -36,8 +36,9 @@ export default function Home() {
           <h2 className="text-2xl font-bold tracking-tight">Your Applications</h2>
           <ApplicationList />
         </div>
-        <Dashboard />
         <div className="grid gap-4">
+           <h2 className="text-2xl font-bold tracking-tight">Statistics</h2>
+          <Dashboard />
           <MonthlyStatsChart />
         </div>
       </main>
