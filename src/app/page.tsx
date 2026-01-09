@@ -35,7 +35,9 @@ function LoadingScreen({ message }: { message: string }) {
   );
 }
 
-export default function Home() {
+// Explicitly define props to satisfy Next.js App Router requirements
+// This prevents the "params are being enumerated" error.
+export default function Home({ params, searchParams }: { params: {}; searchParams: {} }) {
   const { user, isUserLoading } = useUser();
 
   if (isUserLoading) {
