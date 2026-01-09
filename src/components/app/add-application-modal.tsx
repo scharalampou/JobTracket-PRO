@@ -55,7 +55,7 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
-      dateApplied: new Date(),
+      dateApplied: undefined,
     },
   });
 
@@ -66,11 +66,11 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
-      dateApplied: new Date(),
+      dateApplied: undefined,
     });
     setOpen(false);
     toast({
-      title: 'Application Added',
+      title: 'Job Added',
       description: `${values.role} at ${values.company} has been added.`,
     })
   };
