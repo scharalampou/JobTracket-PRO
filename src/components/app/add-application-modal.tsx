@@ -84,7 +84,7 @@ export function AddApplicationModal() {
       company,
       role,
       location,
-      jobDescriptionUrl,
+      jobDescriptionUrl: jobDescriptionUrl || '',
       dateApplied,
     });
 

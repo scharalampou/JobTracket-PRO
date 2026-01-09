@@ -73,6 +73,10 @@
         "displayName": {
           "type": "string",
           "description": "User's display name."
+        },
+        "photoURL": {
+            "type": "string",
+            "description": "URL of the user's profile picture."
         }
       },
       "required": [
@@ -84,8 +88,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {

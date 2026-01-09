@@ -3,6 +3,7 @@ import './globals.css';
 import { JobApplicationsProvider } from '@/contexts/JobApplicationsContext';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
+import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
   title: 'My Job Tracker',
@@ -28,10 +29,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <JobApplicationsProvider>
-            {children}
-            <Toaster />
-          </JobApplicationsProvider>
+          <FirebaseClientProvider>
+            <JobApplicationsProvider>
+              {children}
+              <Toaster />
+            </JobApplicationsProvider>
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>

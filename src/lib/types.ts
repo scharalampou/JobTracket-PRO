@@ -15,6 +15,7 @@ export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 export type JobApplication = {
   id: string;
+  userId: string; // Added to link to the user
   company: string;
   role: string;
   jobDescriptionUrl: string;
