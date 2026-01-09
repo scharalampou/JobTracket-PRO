@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -161,7 +162,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
               name="jobDescriptionUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Description URL</FormLabel>
+                  <FormLabel>Job Description URL (optional)</FormLabel>
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Input type="url" placeholder="https://..." {...field} />
