@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { signInWithGoogle } from '@/firebase/auth/service';
 import { useFirebase } from '@/firebase/provider';
 import { LogIn } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -36,6 +37,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold tracking-tight">Your Applications</h2>
           <ApplicationList />
         </div>
+        <Separator />
         <div className="grid gap-4">
            <h2 className="text-2xl font-bold tracking-tight">Statistics</h2>
           <Dashboard />
