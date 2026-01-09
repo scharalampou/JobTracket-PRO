@@ -13,7 +13,7 @@ import { collection, doc, Timestamp } from 'firebase/firestore';
 
 // Omit fields that are handled automatically or in specific actions
 type NewApplicationData = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes'>;
-type UpdatedApplicationData = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes' | 'jobDescriptionUrl'> & { jobDescriptionUrl?: string };
+type UpdatedApplicationData = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes' >;
 
 
 interface JobApplicationsContextType {
@@ -67,9 +67,6 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
     if (!user || !firestore) return;
     const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
     const updateData = { ...data };
-    if (updateData.jobDescriptionUrl === undefined) {
-      updateData.jobDescriptionUrl = '';
-    }
     updateDocumentNonBlocking(docRef, updateData);
   }, [firestore, user]);
 
