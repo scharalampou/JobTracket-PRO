@@ -62,21 +62,21 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <Archive className="h-4 w-4" />
-                    <span className="sr-only">Close Application</span>
-                </Button>
-                </TooltipTrigger>
-              <TooltipContent>
-                <p>Close Application</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Archive className="h-4 w-4" />
+                <span className="sr-only">Close Application</span>
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Close Application</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="font-headline">Close Application</DialogTitle>
