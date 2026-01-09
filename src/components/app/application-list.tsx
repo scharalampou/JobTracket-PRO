@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook, Archive } from 'lucide-react';
+import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays, Notebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
