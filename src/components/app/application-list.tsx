@@ -63,9 +63,9 @@ export function ApplicationList() {
 
  const { applied, active, archived } = useMemo(() => {
     const activeStatuses: ApplicationStatus[] = [
-      'Screening with Recruiter', 
-      '1st Interview', 
-      '2nd Interview', 
+      'Screening with Recruiter',
+      '1st Interview',
+      '2nd Interview',
       '3rd Interview',
       'Task Stage',
       'Final Round',
@@ -98,7 +98,6 @@ export function ApplicationList() {
       const aValue = a[sortKey];
       const bValue = b[sortKey];
       
-      // Ensure dates are compared correctly
       const valA = aValue instanceof Date ? aValue.getTime() : aValue;
       const valB = bValue instanceof Date ? bValue.getTime() : bValue;
 
@@ -147,7 +146,7 @@ export function ApplicationList() {
               {tableType === 'archived' && (
                 <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Notes</TableHead>
               )}
-              <TableHead className="w-[100px] text-center">
+              <TableHead className="w-[100px] text-center text-base font-bold text-muted-foreground">
                 Actions
               </TableHead>
             </TableRow>
@@ -159,7 +158,7 @@ export function ApplicationList() {
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
                 <TableCell className="text-muted-foreground">
                    <CalendarDays className="h-4 w-4 text-muted-foreground inline-block mr-2"/>
-                  {format(app.dateApplied, 'LLL d, yyyy')}
+                  {format(new Date(app.dateApplied), 'LLL d, yyyy')}
                 </TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}

@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Pencil, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
@@ -58,9 +58,21 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
       company: application.company,
       role: application.role,
       location: application.location,
-      dateApplied: application.dateApplied,
+      dateApplied: new Date(application.dateApplied),
     },
   });
+  
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        jobDescriptionUrl: application.jobDescriptionUrl || '',
+        company: application.company,
+        role: application.role,
+        location: application.location,
+        dateApplied: new Date(application.dateApplied),
+      });
+    }
+  }, [open, application, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     updateApplication(application.id, values);
@@ -120,21 +132,21 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Pencil className="h-4 w-4" />
                 <span className="sr-only">Edit Application</span>
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Edit Application</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </DialogTrigger>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Edit Application</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle className="font-headline">Edit Application</DialogTitle>
@@ -219,11 +231,8 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
                             {...field}
                             value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
                             onChange={(e) => {
-                                const date = new Date(e.target.value);
-
-                                // This handles the timezone offset when a user picks a date.
-                                // The browser will set the time to midnight in the user's local timezone.
-                                // We need to adjust it to UTC midnight to store it correctly.
+                                const dateString = e.target.value;
+                                const date = new Date(dateString);
                                 const userTimezoneOffset = date.getTimezoneOffset() * 60000;
                                 field.onChange(new Date(date.getTime() + userTimezoneOffset));
                             }}
