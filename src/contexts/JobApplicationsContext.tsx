@@ -13,6 +13,7 @@ import { collection, doc, Timestamp } from 'firebase/firestore';
 
 // Omit ID and userId, as they will be handled automatically
 type NewApplication = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes' >;
+type UpdatedApplication = Partial<Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes'>>;
 
 interface JobApplicationsContextType {
   applications: JobApplication[];
@@ -20,6 +21,7 @@ interface JobApplicationsContextType {
   addApplication: (application: NewApplication) => void;
   updateApplicationStatus: (id: string, status: ApplicationStatus) => void;
   archiveApplication: (id: string, notes?: string) => void;
+  updateApplication: (id: string, data: UpdatedApplication) => void;
 }
 
 const JobApplicationsContext = createContext<JobApplicationsContextType | undefined>(undefined);
@@ -64,6 +66,12 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
 
   }, [firestore, user]);
 
+  const updateApplication = useCallback((id: string, data: UpdatedApplication) => {
+    if (!user || !firestore) return;
+    const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
+    updateDocumentNonBlocking(docRef, data);
+  }, [firestore, user]);
+
   const updateApplicationStatus = useCallback((id: string, status: ApplicationStatus) => {
     if (!user || !firestore) return;
     // Get a reference to the document within the user's subcollection
@@ -80,7 +88,7 @@ export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = 
 
 
   return (
-    <JobApplicationsContext.Provider value={{ applications: applications || [], isLoading, addApplication, updateApplicationStatus, archiveApplication }}>
+    <JobApplicationsContext.Provider value={{ applications: applications || [], isLoading, addApplication, updateApplication, updateApplicationStatus, archiveApplication }}>
       {children}
     </JobApplicationsContext.Provider>
   );

@@ -17,6 +17,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { CloseApplicationDialog } from './close-application-dialog';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { EditApplicationModal } from './edit-application-modal';
 
 type SortKey = keyof JobApplication | '';
 
@@ -60,7 +61,7 @@ export function ApplicationList() {
   const [sortKey, setSortKey] = useState<SortKey>('dateApplied');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  const { applied, active, archived } = useMemo(() => {
+ const { applied, active, archived } = useMemo(() => {
     const activeStatuses: ApplicationStatus[] = [
       'Screening with Recruiter', 
       '1st Interview', 
@@ -147,7 +148,7 @@ export function ApplicationList() {
                 <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Notes</TableHead>
               )}
               <TableHead className="w-[100px] text-center">
-                Close
+                Actions
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -189,13 +190,16 @@ export function ApplicationList() {
                     </TableCell>
                   )}
                  <TableCell className="text-center">
-                   {tableType !== 'archived' ? (
-                     <CloseApplicationDialog application={app} />
-                   ) : (
-                      <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
-                        Closed
-                      </Badge>
-                   )}
+                   <div className="flex items-center justify-center gap-1">
+                     <EditApplicationModal application={app} />
+                      {tableType !== 'archived' ? (
+                       <CloseApplicationDialog application={app} />
+                     ) : (
+                        <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
+                          Closed
+                        </Badge>
+                     )}
+                   </div>
                  </TableCell>
               </TableRow>
             ))}
