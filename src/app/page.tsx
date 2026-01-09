@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AddApplicationModal } from '@/components/app/add-application-modal';
