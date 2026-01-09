@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -129,7 +130,7 @@ export function AddApplicationModal() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle className="font-headline">Add New Job</DialogTitle>
+          <DialogTitle className="font-headline">Log Application</DialogTitle>
           <DialogDescription>
             Enter the details of the job you applied for. You can autofill by scanning a URL.
           </DialogDescription>
@@ -235,3 +236,5 @@ export function AddApplicationModal() {
     </Dialog>
   );
 }
+
+    
