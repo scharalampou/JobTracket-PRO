@@ -1,9 +1,11 @@
+
 /**
  * Core Philosophy:
  * This ruleset enforces a strict user-ownership model where all user-generated
  * data is stored within a private data tree specific to that user. A user has
  * full control over their own data but has absolutely no access (read or write)
  * to the data of any other user. The security model relies entirely on the
+
  * document path for authorization, which is simple, performant, and avoids
  * costly cross-document reads in rules.
  *
@@ -11,6 +13,7 @@
  * All application data is segregated by user under the top-level `/users`
  * collection. Each user's data, including their job applications and pipeline
  * stages, is nested hierarchically under their unique user ID:
+ *   /users/{userId}
  *   /users/{userId}/jobApplications/{jobApplicationId}
  *   /users/{userId}/pipelineStages/{pipelineStageId}
  *
@@ -18,8 +21,9 @@
  * - Path-Based Ownership: Authorization is determined solely by matching the
  *   `userId` in the document path with the authenticated user's UID. This
  *   eliminates the need for denormalized `ownerId` fields on documents.
- * - No Public Data: There are no publicly readable collections. All data is
- *   private to the owner.
+ * - Public User Profiles: The top-level user document is readable by any
+ *   authenticated user to allow for features like user search or profile
+ *   viewing, but writable only by the owner.
  * - No User Listing: It is not possible to list documents in the top-level
  *   `/users` collection, preventing enumeration of application users.
  * - Default Deny: Access is denied by default. Permissions must be
@@ -60,7 +64,20 @@ service cloud.firestore {
     // ----------------------------------------------------------------------
     // User Data Collections
     // ----------------------------------------------------------------------
-
+    
+    /**
+     * @description Controls access to user profile data.
+     * @path /users/{userId}
+     * @allow (get) Any authenticated user can read a user's profile.
+     * @allow (create, update) Only the owner of the profile can write to it.
+     * @deny (list, delete) No one can list all users or delete profiles.
+     */
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow create, update: if isOwner(userId);
+      allow list, delete: if false;
+    }
+    
     /**
      * @description Controls access to a user's private job applications.
      * @path /users/{userId}/jobApplications/{jobApplicationId}

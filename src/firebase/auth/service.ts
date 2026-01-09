@@ -39,7 +39,7 @@ export async function getRedirectResult(auth: Auth, firestore: Firestore) {
       // Create or update user profile in Firestore
       const userRef = doc(firestore, 'users', user.uid);
       const userData = {
-        id: user.uid,
+        uid: user.uid,
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,

@@ -1,5 +1,32 @@
+
 {
   "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's public profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the user's profile picture."
+        }
+      },
+      "required": ["uid", "displayName", "email"]
+    },
     "JobApplication": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "JobApplication",
@@ -84,18 +111,27 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
     "structure": [
       {
+        "path": "/users/{userId}",
+        "definition": {
+            "entityName": "UserProfile",
+            "schema": {
+                "$ref": "#/entities/UserProfile"
+            },
+            "description": "Stores public user profile information."
+        }
+      },
+      {
         "path": "/users/{userId}/jobApplications/{jobApplicationId}",
         "definition": {
           "entityName": "JobApplication",
           "schema": {
-            "$ref": "#/backend/entities/JobApplication"
+            "$ref": "#/entities/JobApplication"
           },
           "description": "Stores job applications for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
           "params": [
@@ -115,7 +151,7 @@
         "definition": {
           "entityName": "PipelineStage",
           "schema": {
-            "$ref": "#/backend/entities/PipelineStage"
+            "$ref": "#/entities/PipelineStage"
           },
           "description": "Stores pipeline stages for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
           "params": [
@@ -131,6 +167,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, following the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Authorization Independence is achieved by avoiding `get()` calls in security rules, ensuring that operations are atomic and easier to debug. The design leverages structural segregation and access modeling to simplify security rules.\n\nJob Applications are stored under each user's document to enforce clear ownership. Pipeline Stages are also stored under the user document. This design uses path-based ownership (`/users/{userId}/jobApplications/{jobApplicationId}`) for private data and hierarchical paths for user-owned entities. All documents in a collection share the same security requirements, and consistent patterns are used for authorization using path based ownership."
+    "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, following the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Authorization Independence is achieved by avoiding `get()` calls in security rules, ensuring that operations are atomic and easier to debug. The design leverages structural segregation and access modeling to simplify security rules.\n\nUser profiles are stored in a top-level `users` collection to allow for public access to basic profile information if needed in the future, while still being secure by default. Job Applications are stored under each user's document to enforce clear ownership. Pipeline Stages are also stored under the user document. This design uses path-based ownership (`/users/{userId}/jobApplications/{jobApplicationId}`) for private data and hierarchical paths for user-owned entities. All documents in a collection share the same security requirements, and consistent patterns are used for authorization using path based ownership."
   }
 }
