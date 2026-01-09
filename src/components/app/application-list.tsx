@@ -134,7 +134,7 @@ export function ApplicationList() {
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
-              { (tableType === 'active' || tableType === 'archived') && <TableHead className="w-[100px]"></TableHead> }
+              { (tableType !== 'archived') && <TableHead className="w-[100px]"></TableHead> }
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -144,7 +144,7 @@ export function ApplicationList() {
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
                 <TableCell className="text-muted-foreground">
                    <CalendarDays className="h-4 w-4 text-muted-foreground inline-block mr-2"/>
-                  {format(app.dateApplied, 'LLL d, yyyy')}
+                  {format(new Date(app.dateApplied), 'LLL d, yyyy')}
                 </TableCell>
                 <TableCell className="flex items-center gap-2">
                   {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
@@ -153,37 +153,37 @@ export function ApplicationList() {
                 <TableCell>
                   <StatusDropdown application={app} />
                 </TableCell>
-                 { (tableType === 'active' || tableType === 'archived') && (
+                 { (tableType !== 'archived') && (
                     <TableCell>
-                      {tableType === 'active' ? (
-                          <ConfirmDialog
-                            onConfirm={() => archiveApplication(app.id)}
-                            title="Are you sure?"
-                            description={`This will close your application for the ${app.role} role at ${app.company} and move it to the archive.`}
-                            trigger={
-                               <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                        <Archive className="h-4 w-4" />
-                                        <span className="sr-only">Close Application</span>
-                                    </Button>
-                                    </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Close Application</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            }
-                        />
-                      ) : (
-                         <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
-                          Closed
-                        </Badge>
-                      )
-                    }
+                        <ConfirmDialog
+                          onConfirm={() => archiveApplication(app.id)}
+                          title="Are you sure?"
+                          description={`This will close your application for the ${app.role} role at ${app.company} and move it to the archive.`}
+                          trigger={
+                             <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                      <Archive className="h-4 w-4" />
+                                      <span className="sr-only">Close Application</span>
+                                  </Button>
+                                  </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Close Application</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          }
+                      />
                     </TableCell>
                  )}
+                  {tableType === 'archived' && (
+                    <TableCell>
+                      <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
+                        Closed
+                      </Badge>
+                    </TableCell>
+                  )}
               </TableRow>
             ))}
           </TableBody>
