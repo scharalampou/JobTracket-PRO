@@ -20,7 +20,7 @@ export default function Home() {
   const renderUnauthenticatedView = () => (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4 text-center">
       <Logo className="h-16 w-16" />
-      <h2 className="text-2xl font-bold tracking-tight">Welcome to My Job Tracker</h2>
+      <h2 className="text-2xl font-bold tracking-tight">Welcome to JobTracker</h2>
       <p className="max-w-md text-muted-foreground">
         Sign in to manage your job applications, track your progress, and stay organized in your job search.
       </p>
@@ -48,7 +48,7 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Logo />
           <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
-            My Job Tracker
+            JobTracker
           </h1>
         </div>
         <div className="ml-auto flex items-center gap-2">

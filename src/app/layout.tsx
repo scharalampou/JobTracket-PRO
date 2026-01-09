@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'My Job Tracker',
+  title: 'JobTracker',
   description: 'Track your job applications with ease.',
 };
 
