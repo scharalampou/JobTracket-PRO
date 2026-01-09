@@ -4,9 +4,11 @@ import { initialApplications } from '@/lib/data';
 import type { JobApplication } from '@/lib/types';
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
+type NewApplication = Omit<JobApplication, 'id' | 'status'>;
+
 interface JobApplicationsContextType {
   applications: JobApplication[];
-  addApplication: (application: Omit<JobApplication, 'id' | 'status' | 'dateApplied'>) => void;
+  addApplication: (application: NewApplication) => void;
   updateApplicationStatus: (id: string, status: JobApplication['status']) => void;
 }
 
@@ -15,12 +17,11 @@ const JobApplicationsContext = createContext<JobApplicationsContextType | undefi
 export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [applications, setApplications] = useState<JobApplication[]>(initialApplications);
 
-  const addApplication = useCallback((application: Omit<JobApplication, 'id' | 'status' | 'dateApplied'>) => {
+  const addApplication = useCallback((application: NewApplication) => {
     const newApplication: JobApplication = {
       ...application,
-      id: Date.now().toString(), // Use timestamp for a more unique ID
+      id: Date.now().toString(),
       status: 'Applied',
-      dateApplied: new Date(),
     };
     setApplications(prev => [newApplication, ...prev]);
   }, []);

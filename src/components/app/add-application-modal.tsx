@@ -27,13 +27,35 @@ import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Plus, Wand2, Loader2 } from 'lucide-react';
 import { scanJobUrlForDetails } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { format } from 'date-fns';
+
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+const months = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: format(new Date(currentYear, i), 'MMMM') }));
+const days = Array.from({ length: 31 }, (_, i) => i + 1);
+
 
 const formSchema = z.object({
   jobDescriptionUrl: z.string().url('Please enter a valid URL'),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Role is required'),
   location: z.string().min(1, 'Location is required'),
-});
+  day: z.string().min(1, 'Day is required'),
+  month: z.string().min(1, 'Month is required'),
+  year: z.string().min(1, 'Year is required'),
+}).refine(data => {
+    const { year, month, day } = data;
+    if (year && month && day) {
+      const date = new Date(`${year}-${month}-${day}`);
+      return !isNaN(date.getTime()) && date.getDate() === parseInt(day, 10);
+    }
+    return false;
+  }, {
+    message: 'Invalid date. Please select a valid day for the chosen month and year.',
+    path: ['day'],
+  });
+
 
 export function AddApplicationModal() {
   const [open, setOpen] = useState(false);
@@ -48,17 +70,25 @@ export function AddApplicationModal() {
       company: '',
       role: '',
       location: '',
+      day: '',
+      month: '',
+      year: '',
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    addApplication(values);
-    form.reset({
-      jobDescriptionUrl: '',
-      company: '',
-      role: '',
-      location: '',
+    const { company, role, location, jobDescriptionUrl, year, month, day } = values;
+    const dateApplied = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    
+    addApplication({
+      company,
+      role,
+      location,
+      jobDescriptionUrl,
+      dateApplied,
     });
+
+    form.reset();
     setOpen(false);
     toast({
       title: 'Job Added',
@@ -98,6 +128,15 @@ export function AddApplicationModal() {
       form.setValue('location', result.location, { shouldValidate: true });
        fieldsUpdated.push('Location');
     }
+    
+    // Set current date
+    const today = new Date();
+    form.setValue('year', String(today.getFullYear()));
+    form.setValue('month', String(today.getMonth() + 1));
+    form.setValue('day', String(today.getDate()));
+
+    fieldsUpdated.push('Date Applied');
+
 
     if (fieldsUpdated.length > 0) {
       toast({
@@ -121,7 +160,7 @@ export function AddApplicationModal() {
           Add Job
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[475px]">
+      <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle className="font-headline">Add New Job</DialogTitle>
           <DialogDescription>
@@ -193,6 +232,75 @@ export function AddApplicationModal() {
               )}
             />
             
+            <div>
+              <FormLabel>Date Applied</FormLabel>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                 <FormField
+                  control={form.control}
+                  name="month"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Month" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {months.map(m => (
+                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="day"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Day" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {days.map(d => (
+                            <SelectItem key={d} value={String(d)}>{d}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="year"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select onValuechange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Year" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {years.map(y => (
+                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             <DialogFooter>
               <Button type="submit">Add Job</Button>
             </DialogFooter>
