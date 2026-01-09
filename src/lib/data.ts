@@ -8,6 +8,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/1',
     location: 'Remote',
     status: '2nd Interview',
+    dateApplied: new Date('2024-05-10'),
   },
   {
     id: '2',
@@ -16,6 +17,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/2',
     location: 'New York, NY',
     status: 'Final Round',
+    dateApplied: new Date('2024-05-20'),
   },
   {
     id: '3',
@@ -24,6 +26,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/3',
     location: 'Austin, TX',
     status: 'Applied',
+    dateApplied: new Date('2024-06-01'),
   },
   {
     id: '4',
@@ -32,6 +35,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/4',
     location: 'San Francisco, CA',
     status: 'Offer Received',
+    dateApplied: new Date('2024-04-15'),
   },
   {
     id: '5',
@@ -40,6 +44,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/5',
     location: 'London, UK',
     status: 'No Offer',
+    dateApplied: new Date('2024-05-01'),
   },
     {
     id: '6',
@@ -48,6 +53,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/6',
     location: 'Remote',
     status: 'Screening with Recruiter',
+    dateApplied: new Date('2024-06-05'),
   },
   {
     id: '7',
@@ -56,6 +62,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/7',
     location: 'Remote',
     status: 'Screening with Recruiter',
+    dateApplied: new Date('2024-06-08'),
   },
   {
     id: '8',
@@ -64,6 +71,7 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/8',
     location: 'Tokyo, JP',
     status: 'Rejected CV',
+    dateApplied: new Date('2024-05-18'),
   },
   {
     id: '9',
@@ -72,5 +80,6 @@ export const initialApplications: JobApplication[] = [
     jobDescriptionUrl: 'https://example.com/job/9',
     location: 'Berlin, DE',
     status: 'Offer Received',
+    dateApplied: new Date('2024-04-25'),
   },
 ];
