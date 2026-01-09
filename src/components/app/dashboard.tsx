@@ -4,7 +4,7 @@ import { useJobApplications } from '@/contexts/JobApplicationsContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Briefcase, FileText, Handshake, Users } from 'lucide-react';
-import { ApplicationStatus } from '@/lib/types';
+import type { ApplicationStatus } from '@/lib/types';
 
 export function Dashboard() {
   const { applications } = useJobApplications();
@@ -34,7 +34,7 @@ export function Dashboard() {
   }, [applications]);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Interviews</CardTitle>
