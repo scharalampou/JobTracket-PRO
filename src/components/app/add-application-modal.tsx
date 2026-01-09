@@ -124,7 +124,7 @@ export function AddApplicationModal() {
       <DialogTrigger asChild>
         <Button className="font-bold text-white bg-[#4DAA57] hover:bg-[#4DAA57]/90">
           <Plus className="-ml-1 mr-2 h-5 w-5" />
-          Add Job
+          Application
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
