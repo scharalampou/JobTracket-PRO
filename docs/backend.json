@@ -31,12 +31,8 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "JobApplication",
       "type": "object",
-      "description": "Represents a job application.",
+      "description": "Represents a job application. It is stored as a subcollection under a user's profile.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the JobApplication entity."
-        },
         "company": {
           "type": "string",
           "description": "The name of the company."
@@ -61,11 +57,7 @@
         },
         "status": {
           "type": "string",
-          "description": "Current status of the application in the pipeline. Reference to PipelineStage."
-        },
-        "pipelineStageId": {
-          "type": "string",
-          "description": "Reference to PipelineStage. (Relationship: PipelineStage 1:N JobApplication)"
+          "description": "Current status of the application in the pipeline."
         },
         "isArchived": {
           "type": "boolean",
@@ -73,13 +65,11 @@
         }
       },
       "required": [
-        "id",
         "company",
         "role",
         "applicationDate",
         "location",
         "status",
-        "pipelineStageId",
         "isArchived"
       ]
     },
@@ -115,58 +105,30 @@
     ]
   },
   "firestore": {
-    "structure": [
+     "collections": [
       {
         "path": "/users/{userId}",
-        "definition": {
-            "entityName": "UserProfile",
-            "schema": {
-                "$ref": "#/entities/UserProfile"
-            },
-            "description": "Stores public user profile information."
-        }
-      },
-      {
-        "path": "/users/{userId}/jobApplications/{jobApplicationId}",
-        "definition": {
-          "entityName": "JobApplication",
-          "schema": {
-            "$ref": "#/entities/JobApplication"
-          },
-          "description": "Stores job applications for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The ID of the user who owns the job application."
-            },
-            {
-              "name": "jobApplicationId",
-              "description": "The ID of the job application."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/pipelineStages/{pipelineStageId}",
-        "definition": {
-          "entityName": "PipelineStage",
-          "schema": {
-            "$ref": "#/entities/PipelineStage"
-          },
-          "description": "Stores pipeline stages for each user. Uses path-based ownership for secure access. No denormalized data is needed since access is directly based on the user ID in the path.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The ID of the user who owns the pipeline stage."
-            },
-            {
-              "name": "pipelineStageId",
-              "description": "The ID of the pipeline stage."
-            }
-          ]
-        }
+        "description": "Stores public user profile information.",
+        "schema": {
+            "$ref": "#/entities/UserProfile"
+        },
+        "collections": [
+           {
+              "path": "/jobApplications/{jobApplicationId}",
+              "description": "Stores job applications for each user.",
+               "schema": {
+                  "$ref": "#/entities/JobApplication"
+              }
+           },
+           {
+              "path": "/pipelineStages/{pipelineStageId}",
+              "description": "Stores pipeline stages for each user.",
+              "schema": {
+                  "$ref": "#/entities/PipelineStage"
+              }
+           }
+        ]
       }
-    ],
-    "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, following the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Authorization Independence is achieved by avoiding `get()` calls in security rules, ensuring that operations are atomic and easier to debug. The design leverages structural segregation and access modeling to simplify security rules.\n\nUser profiles are stored in a top-level `users` collection to allow for public access to basic profile information if needed in the future, while still being secure by default. Job Applications are stored under each user's document to enforce clear ownership. Pipeline Stages are also stored under the user document. This design uses path-based ownership (`/users/{userId}/jobApplications/{jobApplicationId}`) for private data and hierarchical paths for user-owned entities. All documents in a collection share the same security requirements, and consistent patterns are used for authorization using path based ownership."
+    ]
   }
 }

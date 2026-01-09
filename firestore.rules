@@ -2,29 +2,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper Functions
+    // Helper function to check if a user is signed in
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+    // Helper function to check if the request is from the owner of the data
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    // PUBLIC: User Profiles
-    // Anyone can read user profiles, but only the owner can write to them.
+    // User Profile: Users can read any profile but only write to their own.
     match /users/{userId} {
       allow read: if isSignedIn();
       allow write: if isOwner(userId);
-    }
-    
-    // PRIVATE: Job Applications
-    // Users can only read/write their own job applications.
-    // The 'uid' field on the document must match the authenticated user's ID.
-    match /jobApplications/{jobApplicationId} {
-      allow read, delete, update: if isOwner(resource.data.uid);
-      allow create: if isOwner(request.resource.data.uid);
+
+      // Job Applications: Users can only read and write their own job applications.
+      match /jobApplications/{jobApplicationId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+
+      // Pipeline Stages: Users can only read and write their own pipeline stages.
+      match /pipelineStages/{pipelineStageId} {
+         allow read, write, delete: if isOwner(userId);
+      }
     }
   }
 }
