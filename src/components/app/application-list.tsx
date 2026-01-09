@@ -135,7 +135,7 @@ export function ApplicationList() {
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
               <TableHead className="w-[100px] text-center">
-                {tableType !== 'archived' ? 'Action' : 'Info'}
+                {tableType !== 'archived' ? 'Close' : 'Info'}
               </TableHead>
             </TableRow>
           </TableHeader>
