@@ -132,7 +132,7 @@ export function AddApplicationModal() {
         <DialogHeader>
           <DialogTitle className="font-headline">Log Application</DialogTitle>
           <DialogDescription>
-            Enter the details of the job you applied for. You can autofill by scanning a URL.
+            Enter the details of the job you applied for. You can autofill by adding the URL of the Job Listing and click on the <Wand2 className="inline-block h-4 w-4" /> icon!
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

@@ -152,7 +152,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
         <DialogHeader>
           <DialogTitle className="font-headline">Edit Application</DialogTitle>
           <DialogDescription>
-            Update the details of the job you applied for.
+            Update the details of this job application. You can autofill by adding the URL and clicking the <Wand2 className="inline-block h-4 w-4" /> icon.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
