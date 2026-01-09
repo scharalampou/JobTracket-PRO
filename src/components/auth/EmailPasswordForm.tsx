@@ -117,7 +117,7 @@ export function EmailPasswordForm() {
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="sign-in">Sign In</TabsTrigger>
-        <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
+        <TabsTrigger value="sign-up">Create Account</TabsTrigger>
       </TabsList>
       
       {error && (
