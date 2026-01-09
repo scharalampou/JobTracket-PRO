@@ -1,39 +1,40 @@
 'use client';
 
-import { 
-  Auth, 
-  GoogleAuthProvider, 
+import {
+  Auth,
+  GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult as firebaseGetRedirectResult,
   signOut as firebaseSignOut,
-  User
+  User,
 } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 import { doc, setDoc, Firestore, serverTimestamp } from 'firebase/firestore';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
  * Initiates the Google Sign-In flow using a redirect.
+ * This function navigates the user away from the app to the Google sign-in page.
  * @param auth - The Firebase Auth instance.
  */
 export function signInWithGoogle(auth: Auth) {
   const provider = new GoogleAuthProvider();
-  // It's better to call signInWithRedirect and not await it,
-  // as it navigates away from the current page.
-  signInWithRedirect(auth, provider).catch((error) => {
-    // This catch is for potential errors during the redirect initiation,
-    // though they are rare. The main error handling happens with getRedirectResult.
-    console.error("Error starting Google sign-in redirect:", error);
+  // Call signInWithRedirect. It does not need to be awaited as it causes a page navigation.
+  signInWithRedirect(auth, provider).catch((error: FirebaseError) => {
+    // This catch is for the rare case where the redirect itself fails to initiate.
+    console.error("Sign-in redirect initiation failed:", {
+      code: error.code,
+      message: error.message,
+    });
   });
 }
 
 /**
- * Creates or updates the user's profile in Firestore.
+ * Creates or updates the user's profile in Firestore upon successful sign-in.
  * This is a non-blocking write operation.
  * @param firestore - The Firestore instance.
- * @param user - The Firebase User object.
+ * @param user - The Firebase User object from a successful authentication.
  */
-function updateUserProfile(firestore: Firestore, user: User) {
+async function updateUserProfile(firestore: Firestore, user: User) {
     const userRef = doc(firestore, 'users', user.uid);
     const userData = {
         uid: user.uid,
@@ -43,21 +44,28 @@ function updateUserProfile(firestore: Firestore, user: User) {
         lastLogin: serverTimestamp(),
     };
 
-    // Use non-blocking write and catch potential permission errors.
-    setDoc(userRef, userData, { merge: true }).catch(error => {
-        const permissionError = new FirestorePermissionError({
-            path: userRef.path,
-            operation: 'write', // 'write' covers both create and update with merge:true
-            requestResourceData: userData,
+    try {
+      // Set the user document. Using { merge: true } prevents overwriting existing
+      // data if the document already exists.
+      await setDoc(userRef, userData, { merge: true });
+    } catch(error) {
+      // This is a critical error if we cannot write the user profile.
+       if (error instanceof FirebaseError) {
+        console.error("Firestore Error: Failed to create/update user profile.", {
+          code: error.code,
+          message: error.message,
+          path: userRef.path,
         });
-        errorEmitter.emit('permission-error', permissionError);
-    });
+      } else {
+        console.error("An unknown error occurred while writing the user profile.", error);
+      }
+    }
 }
 
 /**
- * Handles the result from a Google Sign-In redirect. This should be called on
- * the page the user is redirected back to after signing in. It will resolve
- * with the sign-in result or `null` if no redirect was in progress.
+ * Handles the result from a sign-in redirect. This should be called on
+ * the page the user is redirected back to. It resolves with the sign-in
+ * result or `null` if no redirect was in progress.
  * @param auth - The Firebase Auth instance.
  * @param firestore - The Firestore instance.
  * @returns The UserCredential if sign-in was successful, otherwise null.
@@ -65,25 +73,30 @@ function updateUserProfile(firestore: Firestore, user: User) {
 export async function getRedirectResult(auth: Auth, firestore: Firestore) {
   try {
     const result = await firebaseGetRedirectResult(auth);
-    
-    // If the sign-in was successful, `result` will be populated.
+
+    // If the sign-in was successful, the `result` object will be populated.
     if (result && result.user) {
       // Create or update the user's profile in Firestore.
-      updateUserProfile(firestore, result.user);
+      await updateUserProfile(firestore, result.user);
     }
-    
+
     return result; // Return the result (or null if no redirect occurred).
 
-  } catch (error: any) {
+  } catch (error) {
     // This specific error code means the function was called when no redirect
     // was in progress (e.g., a user just navigated to the page). We can
-    // safely ignore it and let the function return `null`.
-    if (error.code !== 'auth/no-auth-event') {
-        console.error("Error getting redirect result:", error);
-        // Re-throw other, unexpected errors so they can be handled.
+    // safely ignore it and let the function return `null`. All other errors
+    // are unexpected and should be thrown to be caught by the caller.
+    if (error instanceof FirebaseError && error.code !== 'auth/no-auth-event') {
+        console.error("Authentication Error during redirect result processing:", {
+            code: error.code,
+            message: error.message,
+        });
+        // Re-throw other, unexpected errors so they can be handled by the UI.
         throw error;
     }
-    return null; // Explicitly return null for 'auth/no-auth-event'
+    // For 'auth/no-auth-event', we return null, which is expected behavior.
+    return null;
   }
 }
 
@@ -95,7 +108,10 @@ export async function getRedirectResult(auth: Auth, firestore: Firestore) {
 export async function signOut(auth: Auth) {
   try {
     await firebaseSignOut(auth);
-  } catch (error) {
-    console.error("Error signing out:", error);
+  } catch (error: any) {
+    console.error("Error signing out:", {
+      code: error.code,
+      message: error.message,
+    });
   }
 }

@@ -11,9 +11,10 @@ import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { getRedirectResult, signInWithGoogle } from '@/firebase/auth/service';
 import { useFirebase } from '@/firebase/provider';
-import { LogIn } from 'lucide-react';
+import { LogIn, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
+import { FirebaseError } from 'firebase/app';
 
 function LoadingScreen({ message }: { message: string }) {
   return (
@@ -30,7 +31,8 @@ function LoadingScreen({ message }: { message: string }) {
           <ThemeToggle />
         </div>
       </header>
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center gap-2">
+        <Loader2 className="h-5 w-5 animate-spin" />
         <p>{message}</p>
       </div>
     </div>
@@ -45,32 +47,43 @@ export default function Home() {
 
 
   useEffect(() => {
+    // This effect runs once on component mount to process any pending redirect.
     const processRedirect = async () => {
+      // Ensure firebase services are ready before proceeding.
       if (!auth || !firestore) return;
+
       try {
         await getRedirectResult(auth, firestore);
       } catch (error) {
-         // This error is expected if the user just loads the page without a redirect.
-         if ((error as any).code !== 'auth/no-auth-event') {
-            console.error("Error processing redirect result:", error);
-         }
+        // This error is expected if the user just loads the page without a redirect.
+        // We only want to log unexpected errors.
+        if (error instanceof FirebaseError && error.code !== 'auth/no-auth-event') {
+          console.error("Authentication Error:", {
+            code: error.code,
+            message: error.message,
+          });
+        }
       } finally {
-        // This indicates that the redirect check is done. The onAuthStateChanged
-        // listener will now provide the definitive user state.
+        // This indicates that the one-time redirect check is complete.
+        // The `onAuthStateChanged` listener will now provide the definitive user state.
         setIsProcessingAuth(false);
       }
     };
 
-    // Only run this once when the component mounts and firebase services are ready.
     processRedirect();
   }, [auth, firestore]);
 
   const handleSignIn = () => {
-    if (!auth || !firestore) return;
-    signInWithGoogle(auth, firestore);
+    if (!auth) {
+        console.error("Auth service not available for sign-in.");
+        return;
+    }
+    // This function will navigate the user away to the Google sign-in page.
+    signInWithGoogle(auth);
   };
 
-  // Show a loading screen while we process a potential redirect OR while Firebase is initializing the user state.
+  // Show a loading screen while we are either processing a potential redirect
+  // OR while the initial user state is being determined by Firebase.
   if (isProcessingAuth || isUserLoading) {
     const message = isProcessingAuth ? "Finalizing sign in..." : "Loading user data...";
     return <LoadingScreen message={message} />;
@@ -85,7 +98,7 @@ export default function Home() {
         Sign in to manage your job applications, track your progress, and stay organized in your job search.
       </p>
       <Button onClick={handleSignIn}>
-        <LogIn className="mr-2" /> Sign In with Google
+        <LogIn className="mr-2 h-4 w-4" /> Sign In with Google
       </Button>
     </div>
   );
@@ -111,7 +124,7 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Logo />
           <h1 className="font-headline text-xl font-bold tracking-tight text-foreground">
-            JobTracker
+            JobTracker Pro
           </h1>
         </div>
         <div className="ml-auto flex items-center gap-2">

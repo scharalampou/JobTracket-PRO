@@ -1,7 +1,7 @@
 'use client';
 
 import { useFirebase } from '@/firebase/provider';
-import { signInWithGoogle, signOut } from '@/firebase/auth/service';
+import { signOut } from '@/firebase/auth/service';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,25 +12,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Loader2 } from 'lucide-react';
 
 export function UserProfile() {
-  const { auth, firestore, user, isUserLoading } = useFirebase();
+  const { auth, user, isUserLoading } = useFirebase();
 
+  // Show a loading indicator while Firebase is determining the auth state.
   if (isUserLoading) {
-    return <Button variant="outline" size="icon" disabled={true}>...</Button>;
+    return <Button variant="ghost" size="icon" disabled={true} className="h-8 w-8 rounded-full"><Loader2 className="animate-spin" /></Button>;
   }
 
+  // If there's no user, this component doesn't render anything,
+  // as the sign-in button is now handled by the main page.
   if (!user) {
-    return (
-      <Button variant="outline" onClick={() => signInWithGoogle(auth, firestore)}>
-        <LogIn className="mr-2 h-4 w-4" />
-        Sign In
-      </Button>
-    );
+    return null;
   }
 
-  const userInitial = user.displayName?.charAt(0).toUpperCase() || <UserIcon className="h-4 w-4" />;
+  // Prepare the user's initial for the avatar fallback.
+  const userInitial = user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserIcon className="h-4 w-4" />;
 
   return (
     <DropdownMenu>

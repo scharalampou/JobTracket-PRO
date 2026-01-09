@@ -15,7 +15,7 @@ export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 export type JobApplication = {
   id: string;
-  userId: string; // Added to link to the user
+  uid: string; // Changed from userId to uid for consistency
   company: string;
   role: string;
   jobDescriptionUrl: string;
@@ -23,5 +23,5 @@ export type JobApplication = {
   status: ApplicationStatus;
   dateApplied: Date;
   archived: boolean;
-  notes?: string; // Optional notes for when closing an application
+  notes?: string;
 };

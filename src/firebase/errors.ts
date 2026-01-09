@@ -1,5 +1,6 @@
 'use client';
 import { getAuth, type User } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 type SecurityRuleContext = {
   path: string;

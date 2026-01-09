@@ -6,14 +6,13 @@ import {
   useCollection,
   useFirebase,
   useMemoFirebase,
-  addDocumentNonBlocking,
-  updateDocumentNonBlocking,
 } from '@/firebase';
-import { collection, doc, Timestamp } from 'firebase/firestore';
+import { collection, doc, Timestamp, addDoc, updateDoc } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
 
-// Omit fields that are handled automatically or in specific actions
-type NewApplicationData = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes'>;
-type UpdatedApplicationData = Omit<JobApplication, 'id' | 'userId' | 'status' | 'archived' | 'notes' >;
+// Omit fields that are handled automatically
+type NewApplicationData = Omit<JobApplication, 'id' | 'uid' | 'status' | 'archived' | 'notes'>;
+type UpdatedApplicationData = Omit<JobApplication, 'id' | 'uid' | 'status' | 'archived' | 'notes' >;
 
 
 interface JobApplicationsContextType {
@@ -30,70 +29,113 @@ const JobApplicationsContext = createContext<JobApplicationsContextType | undefi
 export const JobApplicationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { firestore, user } = useFirebase();
 
+  // The query now depends on the user's UID.
   const jobApplicationsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
-    return collection(firestore, `users/${user.uid}/jobApplications`);
+    return collection(firestore, 'jobApplications');
+    // Note: The Firestore rules will enforce that only the user's own applications are returned.
+    // We will filter on the client-side for simplicity, but a where('uid', '==', user.uid) clause
+    // would be more performant for large datasets.
   }, [firestore, user]);
 
   const { data: rawApplications, isLoading } = useCollection<Omit<JobApplication, 'dateApplied'> & { dateApplied: Timestamp }>(jobApplicationsQuery);
 
   const applications = useMemo(() => {
-    if (!rawApplications) return [];
-    return rawApplications.map(app => ({
-      ...app,
-      dateApplied: app.dateApplied.toDate(),
+    if (!rawApplications || !user) return [];
+    // Filter applications to only show those belonging to the current user.
+    return rawApplications
+      .filter(app => app.uid === user.uid)
+      .map(app => ({
+        ...app,
+        dateApplied: app.dateApplied.toDate(),
     }));
-  }, [rawApplications]);
+  }, [rawApplications, user]);
 
 
-  const addApplication = useCallback((application: NewApplicationData) => {
+  const addApplication = useCallback(async (application: NewApplicationData) => {
     if (!user || !firestore) return;
 
     const newApplication: Omit<JobApplication, 'id'> = {
       ...application,
       jobDescriptionUrl: application.jobDescriptionUrl || '',
-      userId: user.uid,
+      uid: user.uid, // Set the UID of the current user
       status: 'Applied',
       archived: false,
       notes: '',
-      dateApplied: new Date(application.dateApplied), // Keep as Date object for conversion
+      dateApplied: new Date(application.dateApplied),
     };
     
-    const collectionRef = collection(firestore, `users/${user.uid}/jobApplications`);
-    // The conversion to Timestamp happens inside addDocumentNonBlocking
-    addDocumentNonBlocking(collectionRef, {
-        ...newApplication,
-        dateApplied: Timestamp.fromDate(newApplication.dateApplied),
-    });
-
-  }, [firestore, user]);
-
-  const updateApplication = useCallback((id: string, data: Partial<UpdatedApplicationData>) => {
-    if (!user || !firestore) return;
-    const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
-    const updateData: Partial<UpdatedApplicationData> = { ...data };
-    if (data.dateApplied) {
-        updateData.dateApplied = Timestamp.fromDate(data.dateApplied) as unknown as Date;
+    const collectionRef = collection(firestore, `jobApplications`);
+    try {
+        await addDoc(collectionRef, {
+            ...newApplication,
+            dateApplied: Timestamp.fromDate(newApplication.dateApplied),
+        });
+    } catch (error: any) {
+        console.error("Error adding document: ", error);
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: error.message || "Could not save application.",
+        });
     }
-    updateDocumentNonBlocking(docRef, updateData);
+
   }, [firestore, user]);
 
-  const updateApplicationStatus = useCallback((id: string, status: ApplicationStatus) => {
+  const updateApplication = useCallback(async (id: string, data: Partial<UpdatedApplicationData>) => {
     if (!user || !firestore) return;
-    const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
-    updateDocumentNonBlocking(docRef, { status });
+    const docRef = doc(firestore, `jobApplications`, id);
+    const updateData: any = { ...data };
+    if (data.dateApplied) {
+        updateData.dateApplied = Timestamp.fromDate(data.dateApplied);
+    }
+    
+    try {
+      await updateDoc(docRef, updateData);
+    } catch (error: any) {
+      console.error("Error updating document: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Update failed',
+        description: error.message || 'Could not update the application.',
+      });
+    }
   }, [firestore, user]);
 
-  const archiveApplication = useCallback((id: string, notes?: string) => {
+  const updateApplicationStatus = useCallback(async (id: string, status: ApplicationStatus) => {
     if (!user || !firestore) return;
-    const docRef = doc(firestore, `users/${user.uid}/jobApplications`, id);
+    const docRef = doc(firestore, `jobApplications`, id);
+    try {
+      await updateDoc(docRef, { status });
+    } catch (error: any) {
+      console.error("Error updating status: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Update failed',
+        description: error.message || 'Could not update status.',
+      });
+    }
+  }, [firestore, user]);
+
+  const archiveApplication = useCallback(async (id: string, notes?: string) => {
+    if (!user || !firestore) return;
+    const docRef = doc(firestore, `jobApplications`, id);
     const finalNotes = notes && notes.trim() ? notes.trim() : 'N/A';
-    updateDocumentNonBlocking(docRef, { archived: true, notes: finalNotes });
+    try {
+      await updateDoc(docRef, { archived: true, notes: finalNotes, status: 'No Offer' });
+    } catch (error: any)      {
+      console.error("Error archiving application: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Archive failed',
+        description: error.message || 'Could not archive application.',
+      });
+    }
   }, [firestore, user]);
 
 
   return (
-    <JobApplicationsContext.Provider value={{ applications: applications || [], isLoading, addApplication, updateApplication, updateApplicationStatus, archiveApplication }}>
+    <JobApplicationsContext.Provider value={{ applications, isLoading, addApplication, updateApplication, updateApplicationStatus, archiveApplication }}>
       {children}
     </JobApplicationsContext.Provider>
   );
