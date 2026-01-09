@@ -10,7 +10,9 @@ export function Dashboard() {
   const { applications } = useJobApplications();
 
   const stats = useMemo(() => {
-    const total = applications.length;
+    const nonArchived = applications.filter(app => !app.archived);
+    const total = nonArchived.length;
+
     const interviewStages: ApplicationStatus[] = [
       'Screening with Recruiter', 
       '1st Interview', 
@@ -20,10 +22,10 @@ export function Dashboard() {
       'Final Round', 
       'Offer Received'
     ];
-    const inInterview = applications.filter(app => interviewStages.includes(app.status)).length;
+    const inInterview = nonArchived.filter(app => interviewStages.includes(app.status)).length;
     
     const companiesInterviewed = new Set(
-      applications
+      nonArchived
         .filter(app => interviewStages.includes(app.status))
         .map(app => app.company)
     ).size;
@@ -49,7 +51,7 @@ export function Dashboard() {
           <Handshake className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Final Round').length}</div>
+          <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
           <p className="text-xs text-muted-foreground">Applications in final stages</p>
         </CardContent>
       </Card>

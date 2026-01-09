@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { JobApplication } from '@/lib/types';
 import { StatusBadge } from './status-badge';
-import { ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays } from 'lucide-react';
+import { Archive, ArrowUpDown, Globe, MapPin, Building, Briefcase as RoleIcon, ChevronDown, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { APPLICATION_STATUSES } from '@/lib/types';
@@ -14,6 +14,9 @@ import type { ApplicationStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ScrollArea } from '../ui/scroll-area';
+import { ConfirmDialog } from './confirm-dialog';
+import { Badge } from '../ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 type SortKey = keyof JobApplication | '';
 
@@ -53,15 +56,23 @@ const StatusDropdown = ({ application }: { application: JobApplication }) => {
 
 
 export function ApplicationList() {
-  const { applications } = useJobApplications();
+  const { applications, archiveApplication } = useJobApplications();
   const [sortKey, setSortKey] = useState<SortKey>('dateApplied');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const { applied, active, archived } = useMemo(() => {
-    const archivedStatuses: ApplicationStatus[] = ['No Offer', 'Rejected CV'];
-    const appliedApps = applications.filter(app => app.status === 'Applied');
-    const activeApps = applications.filter(app => !archivedStatuses.includes(app.status) && app.status !== 'Applied');
-    const archivedApps = applications.filter(app => archivedStatuses.includes(app.status));
+    const activeStatuses: ApplicationStatus[] = [
+      'Screening with Recruiter', 
+      '1st Interview', 
+      '2nd Interview', 
+      '3rd Interview',
+      'Task Stage',
+      'Final Round',
+      'Offer Received'
+    ];
+    const appliedApps = applications.filter(app => app.status === 'Applied' && !app.archived);
+    const activeApps = applications.filter(app => activeStatuses.includes(app.status) && !app.archived);
+    const archivedApps = applications.filter(app => app.archived);
     return { applied: appliedApps, active: activeApps, archived: archivedApps };
   }, [applications]);
 
@@ -101,7 +112,7 @@ export function ApplicationList() {
     </div>
   );
 
-  const renderTable = (data: JobApplication[]) => {
+  const renderTable = (data: JobApplication[], tableType: 'active' | 'applied' | 'archived') => {
     if (data.length === 0) {
       return <div className="text-center text-muted-foreground py-10">No applications to display.</div>
     }
@@ -123,6 +134,7 @@ export function ApplicationList() {
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
+              { (tableType === 'active' || tableType === 'archived') && <TableHead className="w-[100px]"></TableHead> }
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -141,6 +153,37 @@ export function ApplicationList() {
                 <TableCell>
                   <StatusDropdown application={app} />
                 </TableCell>
+                 { (tableType === 'active' || tableType === 'archived') && (
+                    <TableCell>
+                      {tableType === 'active' ? (
+                          <ConfirmDialog
+                            onConfirm={() => archiveApplication(app.id)}
+                            title="Are you sure?"
+                            description={`This will close your application for the ${app.role} role at ${app.company} and move it to the archive.`}
+                            trigger={
+                               <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <Archive className="h-4 w-4" />
+                                        <span className="sr-only">Close Application</span>
+                                    </Button>
+                                    </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Close Application</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            }
+                        />
+                      ) : (
+                         <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-500">
+                          Closed
+                        </Badge>
+                      )
+                    }
+                    </TableCell>
+                 )}
               </TableRow>
             ))}
           </TableBody>
@@ -157,9 +200,9 @@ export function ApplicationList() {
         <TabsTrigger value="applied">Applied</TabsTrigger>
         <TabsTrigger value="archived">Archived</TabsTrigger>
       </TabsList>
-      <TabsContent value="active">{renderTable(active)}</TabsContent>
-      <TabsContent value="applied">{renderTable(applied)}</TabsContent>
-      <TabsContent value="archived">{renderTable(archived)}</TabsContent>
+      <TabsContent value="active">{renderTable(active, 'active')}</TabsContent>
+      <TabsContent value="applied">{renderTable(applied, 'applied')}</TabsContent>
+      <TabsContent value="archived">{renderTable(archived, 'archived')}</TabsContent>
     </Tabs>
     </ScrollArea>
   );

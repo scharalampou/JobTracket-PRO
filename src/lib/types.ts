@@ -22,4 +22,5 @@ export type JobApplication = {
   location: string;
   status: ApplicationStatus;
   dateApplied: Date;
+  archived: boolean;
 };

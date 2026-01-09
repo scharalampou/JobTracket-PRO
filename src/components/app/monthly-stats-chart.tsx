@@ -26,8 +26,10 @@ export function MonthlyStatsChart() {
       if (!acc[month]) {
         acc[month] = { name: format(startOfMonth(app.dateApplied), 'MMM yy'), applications: 0, interviews: 0 };
       }
+      // Count all applications regardless of archived status for historical data
       acc[month].applications++;
       if (interviewStages.includes(app.status)) {
+         // Count interviews regardless of archived status for historical data
         acc[month].interviews++;
       }
       return acc;
