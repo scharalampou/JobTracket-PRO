@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useJobApplications } from '@/contexts/JobApplicationsContext';
@@ -36,43 +37,39 @@ export function Dashboard() {
   return (
     <div className="grid grid-cols-2 gap-4">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Active Interviews</CardTitle>
-          <Briefcase className="h-4 w-4 text-muted-foreground" />
+        <CardHeader className="items-center pb-2">
+          <Briefcase className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-center">
           <div className="text-2xl font-bold">{stats.inInterview}</div>
-          <p className="text-xs text-muted-foreground">In an interview stage</p>
+          <p className="text-xs text-muted-foreground">Active Interviews</p>
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Final Stage</CardTitle>
-          <Handshake className="h-4 w-4 text-muted-foreground" />
+        <CardHeader className="items-center pb-2">
+          <Handshake className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-center">
           <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
-          <p className="text-xs text-muted-foreground">Applications in final stages</p>
+          <p className="text-xs text-muted-foreground">Final Stages</p>
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Companies Interviewed</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
+        <CardHeader className="items-center pb-2">
+          <Users className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-center">
           <div className="text-2xl font-bold">{stats.companiesInterviewed}</div>
-          <p className="text-xs text-muted-foreground">Unique companies with interviews</p>
+          <p className="text-xs text-muted-foreground">Companies Interviewed</p>
         </CardContent>
       </Card>
        <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-          <FileText className="h-4 w-4 text-muted-foreground" />
+        <CardHeader className="items-center pb-2">
+          <FileText className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-center">
           <div className="text-2xl font-bold">{stats.total}</div>
-          <p className="text-xs text-muted-foreground">Across all stages</p>
+          <p className="text-xs text-muted-foreground">Total Applications</p>
         </CardContent>
       </Card>
     </div>
