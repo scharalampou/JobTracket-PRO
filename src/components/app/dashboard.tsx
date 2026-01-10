@@ -38,38 +38,38 @@ export function Dashboard() {
     <div className="grid grid-cols-2 gap-4">
       <Card>
         <CardHeader className="items-center pb-2">
-          <Briefcase className="h-8 w-8 text-muted-foreground" />
+          <Briefcase className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold text-[#4DAA57]">{stats.inInterview}</div>
-          <p className="text-xs text-muted-foreground">Active Interviews</p>
+          <div className="text-4xl font-bold text-[#4DAA57]">{stats.inInterview}</div>
+          <p className="text-sm text-muted-foreground">Active Interviews</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="items-center pb-2">
-          <Handshake className="h-8 w-8 text-muted-foreground" />
+          <Handshake className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold text-[#4DAA57]">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
-          <p className="text-xs text-muted-foreground">Final Stages</p>
+          <div className="text-4xl font-bold text-[#4DAA57]">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
+          <p className="text-sm text-muted-foreground">Final Stages</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="items-center pb-2">
-          <Users className="h-8 w-8 text-muted-foreground" />
+          <Users className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold text-[#4DAA57]">{stats.companiesInterviewed}</div>
-          <p className="text-xs text-muted-foreground">Companies Interviewed</p>
+          <div className="text-4xl font-bold text-[#4DAA57]">{stats.companiesInterviewed}</div>
+          <p className="text-sm text-muted-foreground">Companies Interviewed</p>
         </CardContent>
       </Card>
        <Card>
         <CardHeader className="items-center pb-2">
-          <FileText className="h-8 w-8 text-muted-foreground" />
+          <FileText className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold text-[#4DAA57]">{stats.total}</div>
-          <p className="text-xs text-muted-foreground">Total Applications</p>
+          <div className="text-4xl font-bold text-[#4DAA57]">{stats.total}</div>
+          <p className="text-sm text-muted-foreground">Total Applications</p>
         </CardContent>
       </Card>
     </div>
