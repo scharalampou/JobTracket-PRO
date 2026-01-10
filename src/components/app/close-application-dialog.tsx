@@ -113,7 +113,7 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
               <DialogClose asChild>
                 <Button variant="ghost" type="button" className="underline">Cancel</Button>
               </DialogClose>
-              <Button type="submit">Close Application</Button>
+              <Button type="submit" className="font-bold">Close Application</Button>
             </DialogFooter>
           </form>
         </Form>
