@@ -37,7 +37,7 @@ export function Dashboard() {
   return (
     <div className="grid grid-cols-2 gap-4">
       <Card>
-        <CardHeader className="items-center pb-2">
+        <CardHeader className="flex items-center justify-center pb-2">
           <Briefcase className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
@@ -46,7 +46,7 @@ export function Dashboard() {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="items-center pb-2">
+        <CardHeader className="flex items-center justify-center pb-2">
           <Handshake className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
@@ -55,7 +55,7 @@ export function Dashboard() {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="items-center pb-2">
+        <CardHeader className="flex items-center justify-center pb-2">
           <Users className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
@@ -64,7 +64,7 @@ export function Dashboard() {
         </CardContent>
       </Card>
        <Card>
-        <CardHeader className="items-center pb-2">
+        <CardHeader className="flex items-center justify-center pb-2">
           <FileText className="h-10 w-10 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
