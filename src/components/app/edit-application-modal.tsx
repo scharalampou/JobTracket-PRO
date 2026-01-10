@@ -144,7 +144,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
       </TooltipProvider>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle className="font-headline">Edit Application</DialogTitle>
+          <DialogTitle className="text-2xl">Edit Application</DialogTitle>
           <DialogDescription>
             Update the details of this job application. You can autofill by adding the URL and clicking the <Wand2 className="inline-block h-4 w-4" /> icon.
           </DialogDescription>

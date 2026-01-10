@@ -85,7 +85,7 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
       </TooltipProvider>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-headline">Close Application</DialogTitle>
+          <DialogTitle className="text-2xl">Close Application</DialogTitle>
           <DialogDescription>
             Archive this application and add any final notes or feedback from the interview process.
           </DialogDescription>
