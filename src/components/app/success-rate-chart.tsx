@@ -13,23 +13,16 @@ export function SuccessRateChart() {
   const { theme } = useTheme();
 
   const chartData = useMemo(() => {
-    const interviewStages: ApplicationStatus[] = [
-      'Screening with Recruiter',
-      '1st Interview',
-      '2nd Interview',
-      '3rd Interview',
-      'Task Stage',
-      'Final Round',
-      'Offer Received',
-    ];
-
     const totalApplications = applications.length;
     if (totalApplications === 0) {
       return [];
     }
-    
-    const totalInterviews = applications.filter(app => interviewStages.includes(app.status)).length;
-    
+
+    const nonInterviewStatuses: ApplicationStatus[] = ['Applied', 'Rejected CV'];
+    const totalInterviews = applications.filter(
+      app => !nonInterviewStatuses.includes(app.status)
+    ).length;
+
     return [
       { name: 'Applications', value: totalApplications },
       { name: 'Interviews', value: totalInterviews },
@@ -107,4 +100,5 @@ export function SuccessRateChart() {
     </Card>
   );
 }
+
 
