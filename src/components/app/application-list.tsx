@@ -211,20 +211,20 @@ export function ApplicationList() {
 
   return (
     <ScrollArea>
-      <div className="grid grid-cols-[20%_80%] gap-6">
-        <Tabs defaultValue="active" orientation="vertical" className="flex">
+      <Tabs defaultValue="active" orientation="vertical">
+        <div className="grid grid-cols-[20%_80%] gap-6">
           <TabsList className="flex flex-col h-fit w-full">
             <TabsTrigger value="active" className="w-full justify-start green-active-tab">Active</TabsTrigger>
             <TabsTrigger value="applied" className="w-full justify-start green-active-tab">Applied</TabsTrigger>
             <TabsTrigger value="archived" className="w-full justify-start green-active-tab">Archived</TabsTrigger>
           </TabsList>
-          <div className="w-full ml-4">
+          <div>
             <TabsContent value="active" className="mt-0">{renderTable(active, 'active')}</TabsContent>
             <TabsContent value="applied" className="mt-0">{renderTable(applied, 'applied')}</TabsContent>
             <TabsContent value="archived" className="mt-0">{renderTable(archived, 'archived')}</TabsContent>
           </div>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     </ScrollArea>
   );
 }
