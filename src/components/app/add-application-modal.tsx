@@ -218,7 +218,7 @@ export function AddApplicationModal() {
                <DialogClose asChild>
                 <Button variant="ghost" className="underline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" className="font-bold">Add Application</Button>
+              <Button type="submit" className="font-bold text-white bg-[#4DAA57] hover:bg-[#4DAA57]/90">Add Application</Button>
             </DialogFooter>
           </form>
         </Form>
