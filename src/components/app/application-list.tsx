@@ -211,16 +211,20 @@ export function ApplicationList() {
 
   return (
     <ScrollArea>
-    <Tabs defaultValue="active" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 md:w-full">
-        <TabsTrigger value="active" className="green-active-tab">Active</TabsTrigger>
-        <TabsTrigger value="applied" className="green-active-tab">Applied</TabsTrigger>
-        <TabsTrigger value="archived" className="green-active-tab">Archived</TabsTrigger>
-      </TabsList>
-      <TabsContent value="active">{renderTable(active, 'active')}</TabsContent>
-      <TabsContent value="applied">{renderTable(applied, 'applied')}</TabsContent>
-      <TabsContent value="archived">{renderTable(archived, 'archived')}</TabsContent>
-    </Tabs>
+      <div className="grid grid-cols-[auto_1fr] gap-6">
+        <Tabs defaultValue="active" orientation="vertical" className="flex">
+          <TabsList className="flex flex-col h-fit w-full">
+            <TabsTrigger value="active" className="w-full justify-start green-active-tab">Active</TabsTrigger>
+            <TabsTrigger value="applied" className="w-full justify-start green-active-tab">Applied</TabsTrigger>
+            <TabsTrigger value="archived" className="w-full justify-start green-active-tab">Archived</TabsTrigger>
+          </TabsList>
+          <div className="w-full ml-4">
+            <TabsContent value="active" className="mt-0">{renderTable(active, 'active')}</TabsContent>
+            <TabsContent value="applied" className="mt-0">{renderTable(applied, 'applied')}</TabsContent>
+            <TabsContent value="archived" className="mt-0">{renderTable(archived, 'archived')}</TabsContent>
+          </div>
+        </Tabs>
+      </div>
     </ScrollArea>
   );
 }
