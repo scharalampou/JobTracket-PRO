@@ -141,7 +141,7 @@ export function AddApplicationModal() {
               name="jobDescriptionUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Description URL (optional)</FormLabel>
+                  <FormLabel className="font-bold">Job Description URL (optional)</FormLabel>
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Input type="url" placeholder="https://..." {...field} />
@@ -162,7 +162,7 @@ export function AddApplicationModal() {
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company *</FormLabel>
+                    <FormLabel className="font-bold">Company *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Google" {...field} />
                     </FormControl>
@@ -175,7 +175,7 @@ export function AddApplicationModal() {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role *</FormLabel>
+                    <FormLabel className="font-bold">Role *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Software Engineer" {...field} />
                     </FormControl>
@@ -191,7 +191,7 @@ export function AddApplicationModal() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location *</FormLabel>
+                    <FormLabel className="font-bold">Location *</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Remote" {...field} />
                     </FormControl>
@@ -204,7 +204,7 @@ export function AddApplicationModal() {
                 name="dateApplied"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date Applied *</FormLabel>
+                    <FormLabel className="font-bold">Date Applied *</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>

@@ -97,7 +97,7 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes / Feedback</FormLabel>
+                  <FormLabel className="font-bold">Notes / Feedback</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="e.g., 'Received positive feedback on the technical task, but they went with a more senior candidate.'"
