@@ -67,7 +67,7 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
         <Tooltip>
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:bg-transparent">
                 <div
                   className="flex items-center justify-center h-6 w-6 rounded-sm"
                   style={{ backgroundColor: '#F9624E' }}
