@@ -12,8 +12,7 @@ export function Dashboard() {
 
   const stats = useMemo(() => {
     const total = applications.length;
-    const nonArchived = applications.filter(app => !app.archived);
-
+    
     const interviewStages: ApplicationStatus[] = [
       'Screening with Recruiter', 
       '1st Interview', 
@@ -23,11 +22,12 @@ export function Dashboard() {
       'Final Round', 
       'Offer Received'
     ];
-    const inInterview = nonArchived.filter(app => interviewStages.includes(app.status)).length;
+    
+    const inInterview = applications.filter(app => interviewStages.includes(app.status) && !app.archived).length;
     
     const companiesInterviewed = new Set(
-      nonArchived
-        .filter(app => interviewStages.includes(app.status))
+      applications
+        .filter(app => app.status !== 'Applied' && app.status !== 'Rejected CV')
         .map(app => app.company)
     ).size;
 
