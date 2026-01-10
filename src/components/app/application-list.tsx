@@ -211,7 +211,7 @@ export function ApplicationList() {
 
   return (
     <ScrollArea>
-      <div className="grid grid-cols-[auto_1fr] gap-6">
+      <div className="grid grid-cols-[20%_80%] gap-6">
         <Tabs defaultValue="active" orientation="vertical" className="flex">
           <TabsList className="flex flex-col h-fit w-full">
             <TabsTrigger value="active" className="w-full justify-start green-active-tab">Active</TabsTrigger>
