@@ -115,7 +115,7 @@ export function ApplicationList() {
   const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: React.ReactNode }) => (
     <div
       onClick={() => handleSort(key)}
-      className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
+      className="flex items-center cursor-pointer text-[#121212] dark:text-muted-foreground hover:text-foreground transition-colors"
     >
       {children}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -140,14 +140,14 @@ export function ApplicationList() {
               <TableHead className="w-[150px] text-base font-bold">
                 <SortableHeader sortKey="dateApplied">Date</SortableHeader>
               </TableHead>
-              <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Location</TableHead>
+              <TableHead className="w-[150px] text-base font-bold text-[#121212] dark:text-muted-foreground">Location</TableHead>
               <TableHead className="w-[200px] text-base font-bold">
                 <SortableHeader sortKey="status">Status</SortableHeader>
               </TableHead>
               {tableType === 'archived' && (
-                <TableHead className="w-[150px] text-base font-bold text-muted-foreground">Notes</TableHead>
+                <TableHead className="w-[150px] text-base font-bold text-[#121212] dark:text-muted-foreground">Notes</TableHead>
               )}
-              <TableHead className="w-[100px] text-center text-base font-bold text-muted-foreground">
+              <TableHead className="w-[100px] text-center text-base font-bold text-[#121212] dark:text-muted-foreground">
                 Actions
               </TableHead>
             </TableRow>
