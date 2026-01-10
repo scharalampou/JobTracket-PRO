@@ -130,7 +130,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon">
-                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-orange-500">
+                <div className="flex items-center justify-center h-6 w-6 rounded-sm bg-orange-500">
                   <Pencil className="h-4 w-4 text-white" />
                 </div>
                 <span className="sr-only">Edit Application</span>
