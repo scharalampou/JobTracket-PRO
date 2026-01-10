@@ -41,7 +41,7 @@ export function Dashboard() {
           <Briefcase className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold">{stats.inInterview}</div>
+          <div className="text-2xl font-bold text-[#4DAA57]">{stats.inInterview}</div>
           <p className="text-xs text-muted-foreground">Active Interviews</p>
         </CardContent>
       </Card>
@@ -50,7 +50,7 @@ export function Dashboard() {
           <Handshake className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
+          <div className="text-2xl font-bold text-[#4DAA57]">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
           <p className="text-xs text-muted-foreground">Final Stages</p>
         </CardContent>
       </Card>
@@ -59,7 +59,7 @@ export function Dashboard() {
           <Users className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold">{stats.companiesInterviewed}</div>
+          <div className="text-2xl font-bold text-[#4DAA57]">{stats.companiesInterviewed}</div>
           <p className="text-xs text-muted-foreground">Companies Interviewed</p>
         </CardContent>
       </Card>
@@ -68,7 +68,7 @@ export function Dashboard() {
           <FileText className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-2xl font-bold">{stats.total}</div>
+          <div className="text-2xl font-bold text-[#4DAA57]">{stats.total}</div>
           <p className="text-xs text-muted-foreground">Total Applications</p>
         </CardContent>
       </Card>
