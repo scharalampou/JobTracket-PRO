@@ -111,7 +111,7 @@ export function CloseApplicationDialog({ application }: CloseApplicationDialogPr
             />
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="ghost" type="button">Cancel</Button>
+                <Button variant="ghost" type="button" className="underline">Cancel</Button>
               </DialogClose>
               <Button type="submit">Close Application</Button>
             </DialogFooter>

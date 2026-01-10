@@ -231,7 +231,7 @@ export function EditApplicationModal({ application }: EditApplicationModalProps)
             
             <DialogFooter>
                <DialogClose asChild>
-                <Button variant="ghost">Cancel</Button>
+                <Button variant="ghost" className="underline">Cancel</Button>
               </DialogClose>
               <Button type="submit">Save Changes</Button>
             </DialogFooter>

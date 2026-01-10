@@ -216,7 +216,7 @@ export function AddApplicationModal() {
             
             <DialogFooter>
                <DialogClose asChild>
-                <Button variant="ghost">Cancel</Button>
+                <Button variant="ghost" className="underline">Cancel</Button>
               </DialogClose>
               <Button type="submit">Add Application</Button>
             </DialogFooter>
