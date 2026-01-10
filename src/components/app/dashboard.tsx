@@ -42,7 +42,7 @@ export function Dashboard() {
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-4xl font-bold text-[#4DAA57]">{stats.inInterview}</div>
-          <CardTitle>Active Interviews</CardTitle>
+          <CardTitle className="pt-3">Active Interviews</CardTitle>
         </CardContent>
       </Card>
       <Card>
@@ -51,7 +51,7 @@ export function Dashboard() {
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-4xl font-bold text-[#4DAA57]">{applications.filter(a => a.status === 'Final Round' && !a.archived).length}</div>
-          <CardTitle>Final Stages</CardTitle>
+          <CardTitle className="pt-3">Final Stages</CardTitle>
         </CardContent>
       </Card>
       <Card>
@@ -60,7 +60,7 @@ export function Dashboard() {
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-4xl font-bold text-[#4DAA57]">{stats.companiesInterviewed}</div>
-          <CardTitle>Companies Interviewed</CardTitle>
+          <CardTitle className="pt-3">Companies Interviewed</CardTitle>
         </CardContent>
       </Card>
        <Card>
@@ -69,7 +69,7 @@ export function Dashboard() {
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-4xl font-bold text-[#4DAA57]">{stats.total}</div>
-          <CardTitle>Total Applications</CardTitle>
+          <CardTitle className="pt-3">Total Applications</CardTitle>
         </CardContent>
       </Card>
     </div>
