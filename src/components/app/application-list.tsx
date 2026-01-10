@@ -161,8 +161,8 @@ export function ApplicationList() {
                    <CalendarDays className="h-4 w-4 text-muted-foreground inline-block mr-2"/>
                   {format(new Date(app.dateApplied), 'LLL d, yyyy')}
                 </TableCell>
-                <TableCell className="flex items-center gap-2">
-                  {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
+                <TableCell>
+                  {app.location.toLowerCase() === 'remote' ? <Globe className="h-4 w-4 text-muted-foreground inline-block mr-2" /> : <MapPin className="h-4 w-4 text-muted-foreground inline-block mr-2" />}
                   {app.location}
                 </TableCell>
                 <TableCell>
