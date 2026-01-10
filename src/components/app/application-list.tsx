@@ -154,7 +154,7 @@ export function ApplicationList() {
           </TableHeader>
           <TableBody>
             {sorted(data).map(app => (
-              <TableRow key={app.id}>
+              <TableRow key={app.id} className="even:bg-muted/40">
                 <TableCell className="font-medium"><Building className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.company}</TableCell>
                 <TableCell><RoleIcon className="h-4 w-4 text-muted-foreground inline-block mr-2"/>{app.role}</TableCell>
                 <TableCell className="text-muted-foreground">
