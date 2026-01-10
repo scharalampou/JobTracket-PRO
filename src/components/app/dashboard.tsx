@@ -11,8 +11,8 @@ export function Dashboard() {
   const { applications } = useJobApplications();
 
   const stats = useMemo(() => {
+    const total = applications.length;
     const nonArchived = applications.filter(app => !app.archived);
-    const total = nonArchived.length;
 
     const interviewStages: ApplicationStatus[] = [
       'Screening with Recruiter', 
